@@ -5,11 +5,16 @@ import NewProjectDiv from "./NewProjectDiv";
 
 const MainGrid: React.FC = () => {
   const [create , setCreate] = useState(false)
+  const [invite,setInvite] = useState(false)
   const createRef = useRef<HTMLDivElement>(null)
+  const inviteRef = useRef<HTMLDivElement>(null)
   const toggleCreateProject = () => {
     setCreate((prev)=>(
       !prev
     ))
+  }
+  const toggleInvite = () => {
+    setInvite(!invite)
   }
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -25,10 +30,13 @@ const MainGrid: React.FC = () => {
     };
   }, [create]);
   return (
-    <div className="grid grid-cols-1 lg:ml-64  gap-4">
+    <div className="grid grid-cols-1 bg-gray-600 lg:ml-64  gap-4 rounded-lg">
       {/* New Project Card */}
       <div className=" p-6 rounded-lg shadow-md">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
+          <button onClick={toggleInvite} className="px-4 py-2 bg-blue-600 text-white rounded-md">
+            Invite Code
+          </button>
           <button onClick={toggleCreateProject} className="px-4 py-2 bg-blue-600 text-white rounded-md">
             New Project
           </button>
@@ -41,6 +49,14 @@ const MainGrid: React.FC = () => {
             <input name="projectName" type="text" placeholder="Enter Project Name" className="w-full h-10 pl-2 bg-slate-100 text-black"/>
             <div className="flex justify-end mt-7">
             <button type="submit" className="h-10 p-2 bg-blue-500" onClick={(e)=>(e.preventDefault())}>Create</button>
+            </div>
+            </form>
+        </div>}
+        {invite && <div ref={inviteRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] bg-white shadow-lg p-5 rounded-lg">
+            <form action="/invite" method="post">
+            <input name="inviteCode" type="text" placeholder="Enter Invite Code" className="w-full h-10 pl-2 bg-slate-100 text-black"/>
+            <div className="flex justify-end mt-7">
+            <button type="submit" className="h-10 p-2 bg-blue-500" onClick={(e)=>(e.preventDefault())}>Join</button>
             </div>
             </form>
         </div>}

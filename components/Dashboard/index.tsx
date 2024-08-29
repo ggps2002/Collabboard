@@ -5,11 +5,14 @@ import Sidebar from "./Sidebar";
 import UserProfile from "./UserProfile";
 import MainGrid from "./MainGrid";
 
+
 export default function DashboardLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
+  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -44,15 +47,15 @@ export default function DashboardLayout() {
       {/* Main content */}
       <div className="flex flex-col flex-1 ">
         {/* Header */}
-        <header className="flex items-center justify-between p-4 bg-white shadow-md relative">
+        <header className="flex items-center justify-between p-4 bg-gray-950 shadow-md relative">
           <button
-            className="lg:hidden text-2xl text-gray-800"
+            className="lg:hidden text-2xl text-gray-100"
             onClick={toggleSidebar}
           >
             ☰
           </button>
           <div className="flex flex-grow justify-end">
-            <UserProfile isOpen={isProfileOpen} toggleProfile={toggleProfile} ref={profileRef} />
+            <UserProfile isOpen={isProfileOpen} toggleProfile={toggleProfile} ref={profileRef}/>
           </div>
         </header>
 

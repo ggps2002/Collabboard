@@ -4,12 +4,12 @@ interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
 }
-
+ 
 const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isOpen, toggleSidebar }, ref) => {
   return (
     <div
       ref={ref}
-      className={`fixed inset-y-0 left-0 w-64 bg-gray-900 text-white transform ${
+      className={`fixed inset-y-0 left-0 w-64 bg-gray-900 shadow-lg text-white transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       } lg:translate-x-0 transition-transform duration-300 ease-in-out z-50`}
     >

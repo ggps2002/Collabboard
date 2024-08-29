@@ -6,7 +6,7 @@ interface UserProfileProps {
   toggleProfile: () => void;
 }
 
-const UserProfile = forwardRef<HTMLDivElement, UserProfileProps>(({ isOpen, toggleProfile }, ref) => {
+const UserProfile = forwardRef<HTMLDivElement, UserProfileProps>(({ isOpen, toggleProfile}, ref) => {
   const profileRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -31,12 +31,11 @@ const UserProfile = forwardRef<HTMLDivElement, UserProfileProps>(({ isOpen, togg
               className="w-16 h-16 rounded-full"
             />
             <div>
-              <p className="font-bold text-gray-800">User Name</p>
-              <p className="text-gray-600">user@example.com</p>
+              <p className="font-bold text-gray-800">username</p>
+              <p className="text-gray-600">user@email.com</p>
             </div>
           </div>
           <ul className="space-y-2">
-            <li><a href="/profile" className="text-blue-600 hover:underline">Profile</a></li>
             <li><button className="text-red-600 hover:underline" onClick={() => alert("Logged out")}>Logout</button></li>
           </ul>
         </div>
