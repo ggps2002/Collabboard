@@ -40,14 +40,14 @@ export default function DashboardLayout() {
   }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} ref={sidebarRef} />
 
       {/* Main content */}
       <div className="flex flex-col flex-1 ">
         {/* Header */}
-        <header className="flex items-center justify-between p-4 bg-gray-950 shadow-md relative">
+        <header className="flex items-center justify-between p-4 bg-[#121723] shadow-md relative">
           <button
             className="lg:hidden text-2xl text-gray-100"
             onClick={toggleSidebar}
@@ -60,7 +60,7 @@ export default function DashboardLayout() {
         </header>
 
         {/* Main Grid */}
-        <main className="flex-1 p-4 bg-gray-800">
+        <main className="flex-1 p-4 bg-[#1E232E]">
           <MainGrid />
         </main>
       </div>

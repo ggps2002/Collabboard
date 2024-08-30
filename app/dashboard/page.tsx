@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { Client, Account, ID, Databases, Query } from 'appwrite'
 import Dashboard from '@/components/Dashboard'
+import Transition from '@/components/Transition'
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import { createAdminClient } from '@/lib/appwrite'
 
 const DashboardPage = () => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const isMounted = useRef(false);
   const router = useRouter();
   useEffect(() => {
@@ -50,6 +51,7 @@ const DashboardPage = () => {
         }
         setUserEmail(user.email);
         setUserName(user.name);
+        setIsLoading(false);
       }
       catch (error) {
         console.error(error);
@@ -62,7 +64,11 @@ const DashboardPage = () => {
 
   return (
     <div>
-      <Dashboard />
+      {
+        isLoading?
+        (<Transition />) :
+        <Dashboard /> 
+      }
     </div>
   )
 }

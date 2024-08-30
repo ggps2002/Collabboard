@@ -2,15 +2,18 @@ import React from 'react'
 
 const NewProjectDiv = () => {
   return (
-    <div className='mt-4 min-h-[7vw] bg-slate-100 border-b-2 p-4 rounded-lg'>
-        <div className='flex justify-between'>
-            <h1 className='text-black' >Project 1</h1>
-            <p className='text-black'>2023-08-01</p>
+    <div className='min-h-[7vw] border-y-2 p-[2vw] '>
+      <div className='flex justify-between'>
+        <h3  >Project 1</h3>
+        <p >2023-08-01</p>
+      </div>
+      <div className='mt-5 flex justify-between'>
+        <p >Users: Adam,Chris,John</p>
+        <div className='flex'>
+          <button className='bg-green-500 px-[.5vw] mr-4  rounded-md'>View</button>
+          <button className='bg-red-500 px-[.5vw]  rounded-md'>Delete</button>
         </div>
-        <div className='mt-5 flex justify-between'>
-        <p className='text-black'>Users: Adam,Chris,John</p>
-        <button className='bg-red-500 px-2  rounded-md'>Delete</button>
-        </div>
+      </div>
     </div>
   )
 }

@@ -1,68 +1,59 @@
-'use client'
+import React from 'react'
+import { Button } from '../ui/button'
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { Label } from '../ui/label';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import NewProjectDiv from './NewProjectDiv';
 
-import React, { useEffect, useRef, useState } from "react";
-import NewProjectDiv from "./NewProjectDiv";
 
-const MainGrid: React.FC = () => {
-  const [create , setCreate] = useState(false)
-  const [invite,setInvite] = useState(false)
-  const createRef = useRef<HTMLDivElement>(null)
-  const inviteRef = useRef<HTMLDivElement>(null)
-  const toggleCreateProject = () => {
-    setCreate((prev)=>(
-      !prev
-    ))
-  }
-  const toggleInvite = () => {
-    setInvite(!invite)
-  }
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (createRef.current && !createRef.current.contains(event.target as Node)) {
-        setCreate(false);
-      }
-    };
+const MainGrid = () => {
+    return (
+        <div className='lg:ml-[17vw] py-4 px-[0.8vw]'>
+            <div className='py-8'>
+                <h1 className='text-[3rem]'>Welcome John,</h1>
+            </div>
+            <div className='grid lg:grid-cols-3 xs:grid-cols-1 grid-rows-2 gap-4'>
+                <div className='col-span-2 row-span-2'>
+                    <h2>My Projects</h2>
+                    <div className='mt-4'>
+                        <NewProjectDiv />
+                        <NewProjectDiv />
+                        <NewProjectDiv />
+                    </div>
+                </div>
+                <div>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Create project</CardTitle>
+                            <CardDescription>Create your own work board</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <form>
+                                <div className="grid w-full items-center gap-4">
+                                    <div className="flex flex-col space-y-1.5">
+                                        <Label htmlFor="name">Name</Label>
+                                        <Input id="name" placeholder="Name of your project" />
+                                    </div>
+                                </div>
+                            </form>
+                        </CardContent>
+                        <CardFooter>
+                            <p>Card Footer</p>
+                        </CardFooter>
+                    </Card>
 
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [create]);
-  return (
-    <div className="grid grid-cols-1 bg-gray-600 lg:ml-64  gap-4 rounded-lg">
-      {/* New Project Card */}
-      <div className=" p-6 rounded-lg shadow-md">
-        <div className="flex justify-end gap-4">
-          <button onClick={toggleInvite} className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            Invite Code
-          </button>
-          <button onClick={toggleCreateProject} className="px-4 py-2 bg-blue-600 text-white rounded-md">
-            New Project
-          </button>
+                </div>
+            </div>
         </div>
-        <NewProjectDiv/>
-        <NewProjectDiv/>
-        <NewProjectDiv/>
-        {create && <div ref={createRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] bg-white shadow-lg p-5 rounded-lg">
-            <form action="/create" method="post">
-            <input name="projectName" type="text" placeholder="Enter Project Name" className="w-full h-10 pl-2 bg-slate-100 text-black"/>
-            <div className="flex justify-end mt-7">
-            <button type="submit" className="h-10 p-2 bg-blue-500" onClick={(e)=>(e.preventDefault())}>Create</button>
-            </div>
-            </form>
-        </div>}
-        {invite && <div ref={inviteRef} className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[24rem] bg-white shadow-lg p-5 rounded-lg">
-            <form action="/invite" method="post">
-            <input name="inviteCode" type="text" placeholder="Enter Invite Code" className="w-full h-10 pl-2 bg-slate-100 text-black"/>
-            <div className="flex justify-end mt-7">
-            <button type="submit" className="h-10 p-2 bg-blue-500" onClick={(e)=>(e.preventDefault())}>Join</button>
-            </div>
-            </form>
-        </div>}
-      </div>
-    </div>
-  );
-};
+    )
+}
 
-export default MainGrid;
+export default MainGrid
