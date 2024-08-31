@@ -1,18 +1,20 @@
-'use client'
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import Sidebar from "./Sidebar";
-import UserProfile from "./UserProfile";
-import MainGrid from "./MainGrid";
+import { useEffect, useRef, useState } from 'react';
+import Sidebar from './Sidebar';
+import UserProfile from './UserProfile';
+import MainGrid from './MainGrid';
 
+interface DashboardProps {
+  name: string;
+  email: string;
+}
 
-export default function DashboardLayout() {
+const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-
-  
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -32,10 +34,10 @@ export default function DashboardLayout() {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
@@ -45,9 +47,9 @@ export default function DashboardLayout() {
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} ref={sidebarRef} />
 
       {/* Main content */}
-      <div className="flex flex-col flex-1 ">
+      <div className="flex flex-col flex-1">
         {/* Header */}
-        <header className="flex items-center justify-between p-4 bg-[#121723] shadow-md relative">
+        <header className="flex items-center justify-between p-4 bg-[#030711] shadow-md relative">
           <button
             className="lg:hidden text-2xl text-gray-100"
             onClick={toggleSidebar}
@@ -55,15 +57,17 @@ export default function DashboardLayout() {
             ☰
           </button>
           <div className="flex flex-grow justify-end">
-            <UserProfile isOpen={isProfileOpen} toggleProfile={toggleProfile} ref={profileRef}/>
+            <UserProfile name={name} email={email} />
           </div>
         </header>
 
         {/* Main Grid */}
-        <main className="flex-1 p-4 bg-[#1E232E]">
-          <MainGrid />
+        <main className="flex-1 p-4 bg-[#0f1421]">
+          <MainGrid name={name}/>
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default DashboardLayout;

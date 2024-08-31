@@ -67,7 +67,7 @@ const DashboardPage = () => {
       {
         isLoading?
         (<Transition />) :
-        <Dashboard /> 
+        <Dashboard name={userName} email={userEmail}/> 
       }
     </div>
   )

@@ -33,6 +33,24 @@ const SignupPage: React.FC = () => {
     checkAuth();
   }, [router]);
 
+  const signUpWithGoogle = async () => {
+    const client = new Client()
+      .setEndpoint('https://cloud.appwrite.io/v1')
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
+
+    const account = new Account(client);
+
+    try {
+      await account.createOAuth2Session(
+        OAuthProvider.Google,
+        `${url}/dashboard?auth=${encodeURIComponent('oauth')}`,
+        `${url}/signup`,
+      );
+    } catch (error) {
+      console.error('Error signing up with GitHub:', error);
+    }
+  }
+
   const signUpWithGithub = async () => {
     const client = new Client()
       .setEndpoint('https://cloud.appwrite.io/v1')
@@ -86,7 +104,7 @@ const SignupPage: React.FC = () => {
                 <p className="mb-11 text-center text-base font-medium text-body-color">
                   It’s totally free and super easy
                 </p>
-                {/* <form action={signUpWithGoogle}>
+                <form action={signUpWithGoogle}>
                 <button type="submit" className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
                   <span className="mr-3">
                     <svg
@@ -123,7 +141,7 @@ const SignupPage: React.FC = () => {
                   </span>
                   Sign in with Google
                 </button>
-                </form> */}
+                </form>
                 <form action={signUpWithGithub}>
                   <button type="submit" className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
                     <span className="mr-3">

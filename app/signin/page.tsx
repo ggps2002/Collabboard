@@ -1,14 +1,88 @@
+'use client'
+
 import Link from "next/link";
+import { Client, Account ,Databases ,OAuthProvider ,Query } from "appwrite";
+import { useState, FormEvent } from 'react';
+import { useRouter } from "next/navigation";
+// import { Metadata } from "next";
 
-import { Metadata } from "next";
+// export const metadata: Metadata = {
+//   title: "Sign In Page | Free Next.js Template for Startup and SaaS",
+//   description: "This is Sign In Page for Startup Nextjs Template",
+//   // other metadata
+// };
 
-export const metadata: Metadata = {
-  title: "Sign In Page | Free Next.js Template for Startup and SaaS",
-  description: "This is Sign In Page for Startup Nextjs Template",
-  // other metadata
-};
+const url = process.env.PRODUCTION_URL || 'http://localhost:3000'
 
 const SigninPage = () => {
+  const [userPassword, setUserPassword] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const router = useRouter()
+
+  const handleEmailSignin = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const client = new Client()
+      .setEndpoint('https://cloud.appwrite.io/v1')
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
+
+      const account = new Account(client);
+      const database = new Databases(client);
+      const promise = account.deleteSession('current');
+        promise.then((response) => {
+            console.log(response);
+        }, (error) => {
+            console.error(error);
+      })
+      const session = await account.createEmailPasswordSession(userEmail, userPassword);
+      const user = await database.listDocuments(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+        [Query.equal('userId', [session.userId])]
+      )
+      if (!user) throw new Error('Database Error');
+      router.push('/dashboard');
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const signUpWithGoogle = async () => {
+    const client = new Client()
+      .setEndpoint('https://cloud.appwrite.io/v1')
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
+
+    const account = new Account(client);
+
+    try {
+      await account.createOAuth2Session(
+        OAuthProvider.Google,
+        `${url}/dashboard?auth=${encodeURIComponent('oauth')}`,
+        `${url}/signup`,
+      );
+    } catch (error) {
+      console.error('Error signing up with GitHub:', error);
+    }
+  }
+
+  const signUpWithGithub = async () => {
+    const client = new Client()
+      .setEndpoint('https://cloud.appwrite.io/v1')
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
+
+    const account = new Account(client);
+
+    try {
+      await account.createOAuth2Session(
+        OAuthProvider.Github,
+        `${url}/dashboard?auth=${encodeURIComponent('oauth')}`,
+        `${url}/signup`,
+        ['user']
+      );
+    } catch (error) {
+      console.error('Error signing up with GitHub:', error);
+    }
+  };
   return (
     <>
       <section className="relative z-10 overflow-hidden pb-16 pt-36 md:pb-20 lg:pb-28 lg:pt-[180px]">
@@ -22,7 +96,7 @@ const SigninPage = () => {
                 <p className="mb-11 text-center text-base font-medium text-body-color">
                   Login to your account for a faster checkout.
                 </p>
-                <button className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
+                <button onClick={signUpWithGoogle} className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
                   <span className="mr-3">
                     <svg
                       width="20"
@@ -59,7 +133,7 @@ const SigninPage = () => {
                   Sign in with Google
                 </button>
 
-                <button className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
+                <button onClick={signUpWithGithub} className="border-stroke dark:text-body-color-dark dark:shadow-two mb-6 flex w-full items-center justify-center rounded-sm border bg-[#f8f8f8] px-6 py-3 text-base text-body-color outline-none transition-all duration-300 hover:border-primary hover:bg-primary/5 hover:text-primary dark:border-transparent dark:bg-[#2C303B] dark:hover:border-primary dark:hover:bg-primary/5 dark:hover:text-primary dark:hover:shadow-none">
                   <span className="mr-3">
                     <svg
                       fill="currentColor"
@@ -80,7 +154,7 @@ const SigninPage = () => {
                   </p>
                   <span className="hidden h-[1px] w-full max-w-[70px] bg-body-color/50 sm:block"></span>
                 </div>
-                <form>
+                <form onSubmit={handleEmailSignin}>
                   <div className="mb-8">
                     <label
                       htmlFor="email"
@@ -89,6 +163,7 @@ const SigninPage = () => {
                       Your Email
                     </label>
                     <input
+                      onChange={(e) => setUserEmail(e.target.value)}
                       type="email"
                       name="email"
                       placeholder="Enter your Email"
@@ -103,6 +178,7 @@ const SigninPage = () => {
                       Your Password
                     </label>
                     <input
+                      onChange={(e) => setUserPassword(e.target.value)}
                       type="password"
                       name="password"
                       placeholder="Enter your Password"
@@ -153,7 +229,7 @@ const SigninPage = () => {
                     </div>
                   </div>
                   <div className="mb-6">
-                    <button className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90">
+                    <button type="submit" className="shadow-submit dark:shadow-submit-dark flex w-full items-center justify-center rounded-sm bg-primary px-9 py-4 text-base font-medium text-white duration-300 hover:bg-primary/90">
                       Sign in
                     </button>
                   </div>

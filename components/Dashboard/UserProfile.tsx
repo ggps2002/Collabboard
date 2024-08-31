@@ -6,13 +6,30 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import LogoutIcon from '@mui/icons-material/Logout';
+import { Account, Client } from 'appwrite';
+import { useRouter } from 'next/navigation';
 
 
 interface UserProfileProps {
-    isOpen: boolean;
-    toggleProfile: () => void;
+    name: string;
+    email: string;
 }
-const UserProfile = forwardRef<HTMLDivElement, UserProfileProps>(({ isOpen, toggleProfile }, ref) => {
+const UserProfile: React.FC<UserProfileProps> = ({ name, email }) => {
+    const router = useRouter();
+    const handleUserLogout = () => {
+        const client = new Client();
+        client
+          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+        const account = new Account(client);
+        const promise = account.deleteSession('current');
+        promise.then((response) => {
+            console.log(response);
+            router.push('/signup')
+        }, (error) => {
+            console.error(error);
+        })
+    }
     return (
         <div>
             <Popover>
@@ -29,17 +46,17 @@ const UserProfile = forwardRef<HTMLDivElement, UserProfileProps>(({ isOpen, togg
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                     <div className='cursor-pointer '>
-                        <p className='hover:text-red-500'><LogoutIcon style={{color: 'red'}}/> Log out</p>
+                        <p className='hover:text-red-500' onClick={handleUserLogout}><LogoutIcon style={{color: 'red'}}/> Log out</p>
                     </div>
                     </div>
                     <div className='mt-4'>
-                        <p className='font-bold'>John Doe</p>
-                        <p>John@Doe.com</p>
+                        <p className='font-bold'>{name}</p>
+                        <p>{email}</p>
                     </div>
                 </PopoverContent>
             </Popover>
         </div>
     )
-})
+}
 
 export default UserProfile
