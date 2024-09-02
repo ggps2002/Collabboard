@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Client, Account ,Databases ,OAuthProvider ,Query } from "appwrite";
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from "next/navigation";
 // import { Metadata } from "next";
 
@@ -18,6 +18,27 @@ const SigninPage = () => {
   const [userPassword, setUserPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const router = useRouter()
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const client = new Client();
+        client
+          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+        const account = new Account(client);
+        const userAuthenticated = await account.get();
+        console.log('User authentication status:', userAuthenticated);
+        if (userAuthenticated) {
+          router.push('/dashboard');
+        }
+      } catch (error) {
+        console.error('User not authenticated');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleEmailSignin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();

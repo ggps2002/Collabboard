@@ -15,7 +15,16 @@ const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const [ sidebarActive, setSidebarActive ] = useState('home');
+  const [viewProjectDetails, setViewProjectDetails] = useState('');
 
+  const toggleViewProjectsDetails = (projectId: string) => {
+    setViewProjectDetails(projectId);
+  }
+
+  const toggleSidebarActive = (active : string) => {
+    setSidebarActive(active);
+  }
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
@@ -44,7 +53,7 @@ const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} ref={sidebarRef} />
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} ref={sidebarRef} sidebarActive={sidebarActive} toggleSidebarActive={toggleSidebarActive} toggleProjectDetails={toggleViewProjectsDetails}/>
 
       {/* Main content */}
       <div className="flex flex-col flex-1">
@@ -63,7 +72,7 @@ const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
 
         {/* Main Grid */}
         <main className="flex-1 p-4 bg-[#0f1421]">
-          <MainGrid name={name}/>
+          <MainGrid name={name} active={sidebarActive} projectDetails={viewProjectDetails} toggleProjectDetails={toggleViewProjectsDetails}/>
         </main>
       </div>
     </div>

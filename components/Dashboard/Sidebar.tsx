@@ -1,11 +1,16 @@
-import React, { forwardRef } from "react";
+'use client'
+
+import React, { forwardRef, useState } from "react";
 
 interface SidebarProps {
   isOpen: boolean;
   toggleSidebar: () => void;
+  sidebarActive: string;
+  toggleSidebarActive: (active: string) => void;
+  toggleProjectDetails: (projectId: string) => void;
 }
  
-const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isOpen, toggleSidebar }, ref) => {
+const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isOpen, toggleSidebar ,sidebarActive ,toggleSidebarActive ,toggleProjectDetails }, ref) => {
   return (
     <div
       ref={ref}
@@ -22,9 +27,18 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(({ isOpen, toggleSideba
       <nav className="flex flex-col h-full">
         <div className="p-4 text-lg font-bold">Dashboard</div>
         <ul className="flex-1">
-          <li className="p-4 hover:bg-gray-700">Home</li>
-          <li className="p-4 hover:bg-gray-700">Projects</li>
-          <li className="p-4 hover:bg-gray-700">Settings</li>
+          <li onClick={() => {
+            toggleSidebarActive('home');
+            toggleProjectDetails('');
+          }} className={`cursor-default p-4 ${ sidebarActive == 'home' ? 'bg-primary' : 'hover:bg-gray-700'} rounded-lg mx-2`}>Home</li>
+          <li onClick={() => {
+            toggleSidebarActive('projects');
+            toggleProjectDetails('');
+          }} className={`cursor-default p-4 ${ sidebarActive == 'projects' ? 'bg-primary' : 'hover:bg-gray-700'} rounded-lg mx-2 my-2`}>Projects</li>
+          <li onClick={() => {
+            toggleSidebarActive('settings');
+            toggleProjectDetails('');
+          }} className={`cursor-default p-4 ${ sidebarActive == 'settings' ? 'bg-primary' : 'hover:bg-gray-700'} mx-2 rounded-lg`}>Settings</li>
         </ul>
       </nav>
     </div>
