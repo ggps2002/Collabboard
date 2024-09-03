@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 const DashboardPage = () => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userId, setUserId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const isMounted = useRef(false);
   const router = useRouter();
@@ -33,7 +34,7 @@ const DashboardPage = () => {
           process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
           [Query.equal('userId', [user.$id])]
         )
-        console.log(existingUser);
+        console.log('Existing user:',existingUser);
         if(!existingUser.documents.length) {
           const response = await database.createDocument(
             process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
@@ -51,6 +52,7 @@ const DashboardPage = () => {
         }
         setUserEmail(user.email);
         setUserName(user.name);
+        setUserId(user.$id);
         setIsLoading(false);
       }
       catch (error) {
@@ -67,7 +69,7 @@ const DashboardPage = () => {
       {
         isLoading?
         (<Transition />) :
-        <Dashboard name={userName} email={userEmail}/> 
+        <Dashboard name={userName} email={userEmail} id={userId}/> 
       }
     </div>
   )

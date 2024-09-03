@@ -6,11 +6,12 @@ import UserProfile from './UserProfile';
 import MainGrid from './MainGrid';
 
 interface DashboardProps {
+  id: string;
   name: string;
   email: string;
 }
 
-const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
+const DashboardLayout: React.FC<DashboardProps> = ({ name, email ,id }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -72,7 +73,7 @@ const DashboardLayout: React.FC<DashboardProps> = ({ name, email }) => {
 
         {/* Main Grid */}
         <main className="flex-1 p-4 bg-[#0f1421]">
-          <MainGrid name={name} active={sidebarActive} projectDetails={viewProjectDetails} toggleProjectDetails={toggleViewProjectsDetails}/>
+          <MainGrid id={id} name={name} active={sidebarActive} projectDetails={viewProjectDetails} toggleProjectDetails={toggleViewProjectsDetails}/>
         </main>
       </div>
     </div>
