@@ -6665,3 +6665,17 @@ declare module "node-appwrite" {
     static unique(): string;
     static custom(id: string): string;
   }
+
+  declare module 'roughjs/bundled/rough.esm' {
+    const rough: {
+      generator: () => {
+        line: (x1: number, y1: number, x2: number, y2: number) => any;
+        // Add other methods if needed
+      };
+      canvas: (canvas: HTMLCanvasElement) => {
+        draw: (element: any) => void;
+        // Add other methods if needed
+      };
+    };
+    export default rough;
+  }

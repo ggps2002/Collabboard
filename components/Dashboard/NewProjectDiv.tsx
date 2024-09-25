@@ -114,7 +114,7 @@ const NewProjectDiv: React.FC<NewProjectProps> = ({ id, name, users, toggleProje
             <DropdownMenu>
               <DropdownMenuTrigger><MoreHorizIcon /></DropdownMenuTrigger>
               <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => toggleProjectDetails(id)}>
+                <DropdownMenuItem onClick={() => toggleProjectDetails(name)}>
                   Details
                 </DropdownMenuItem>
                 <DropdownMenuItem>

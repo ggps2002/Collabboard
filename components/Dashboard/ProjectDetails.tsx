@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { Client, Databases, Query } from 'appwrite';
 import UserDiv from './UserDiv';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -10,13 +11,49 @@ import pink from '@mui/material/colors/pink';
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface ProjectDetailsProps {
-    projectId: string;
+    projectName: string;
 }
 
-const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
+const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectName }) => {
+    const [details, setDetails] = useState<any>();
+    const [superUser, setSuperUser] = useState('')
     const [isLiked, setIsLiked] = useState(false);
     const [isWatching, setIsWatching] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const isMounted = useRef(false);
+    useEffect(() => {
+        const getProjectDetails = async () => {
+            if (!isMounted.current) {
+                isMounted.current = true;
+                return;
+            }
+            try {
+                const client = new Client()
+                client.setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+                client.setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+                const database = new Databases(client);
+                const project = await database.listDocuments(
+                    process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+                    process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID!,
+                    [Query.equal('name', [projectName])]
+                )
+                const superUserId = project.documents[0].projectId;
+                const user = await database.listDocuments(
+                    process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+                    process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+                    [Query.equal('userId', [superUserId])]
+                )
+                setSuperUser(user.documents[0].name)
+                setDetails({
+                    ...project.documents[0]
+                })
+                setIsLoading(false);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+        getProjectDetails()
+    }, [])
     return (
         isLoading ? (
             <div className='flex gap-8'>
@@ -57,7 +94,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
                     <div className='col-span-2 bg-[#030711] py-8 px-4 rounded-lg border-[1px] border-gray-800 mb-2 shadow-lg'>
                         <div className='mb-8'>
                             <div className='flex justify-between'>
-                                <h1 className='font-bold text-4xl'>Project Name</h1>
+                                <h1 className='font-bold text-4xl'>{projectName}</h1>
                                 <div className='flex gap-4'>
                                     <div className='self-center'>
                                         {isWatching ? (
@@ -75,7 +112,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
                                     </div>
                                     <div className='p-2 bg-gray-800 rounded-3xl'>
                                         <span className='text-xs text-white'>
-                                            <ContentCopyIcon fontSize='small' className='cursor-pointer' /> {projectId.substring(0, 15)}...
+                                            <ContentCopyIcon fontSize='small' className='cursor-pointer' /> {details.$id.substring(0, 15)}...
                                         </span>
                                     </div>
                                 </div>
@@ -85,7 +122,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
                             <div className='border-b-2 pb-4'>
                                 <div className='mb-4'>
                                     <h2 className='text-[#8A8A8A] mb-1'>Created</h2>
-                                    <h3>12th September 2024</h3>
+                                    <h3>{details.date}</h3>
                                 </div>
                                 <div className='mb-4'>
                                     <h2 className='text-[#8A8A8A] mb-2'>Creator</h2>
@@ -95,7 +132,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
                                             <AvatarFallback />
                                         </Avatar>
                                         <h3>
-                                            Creator name
+                                            {superUser}
                                         </h3>
                                     </div>
                                 </div>
@@ -103,29 +140,37 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectId }) => {
                             <div className='flex gap-4 mt-4 justify-around'>
                                 <div>
                                     <h2 className='text-[#8A8A8A] mb-1 text-center'>Users</h2>
-                                    <h3 className='text-2xl text-center'>23</h3>
+                                    <h3 className='text-2xl text-center'>{details.userId.length}</h3>
                                 </div>
                                 <div>
                                     <h2 className='text-[#8A8A8A] mb-1 text-center'>Watching</h2>
-                                    <h3 className='text-2xl text-center'>50</h3>
+                                    <h3 className='text-2xl text-center'>N/A</h3>
                                 </div>
                                 <div>
                                     <h2 className='text-[#8A8A8A] mb-1 text-center'>Likes</h2>
-                                    <h3 className='text-2xl text-center'>121</h3>
+                                    <h3 className='text-2xl text-center'>N/A</h3>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='bg-[#030711] p-4 rounded-lg border-[1px] border-gray-800'>
-                        <div className='border-b-2 pb-2'>
-                            People:
-                        </div>
-                        <div>
-                            <UserDiv />
-                            <UserDiv />
-                            <UserDiv />
-                        </div>
-                    </div>
+                    {
+                        details.userId.length > 0 ? (
+                            <div className='bg-[#030711] p-4 rounded-lg border-[1px] border-gray-800'>
+                                <div className='border-b-2 pb-2'>
+                                    People:
+                                </div>
+                                <div>
+                                    <UserDiv />
+                                    <UserDiv />
+                                    <UserDiv />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='bg-[#030711] p-4 rounded-lg border-[1px] border-gray-800'>
+                                <h1>No people currently in this project</h1>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         )

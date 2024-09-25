@@ -104,7 +104,7 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
   return (
     <>
       {
-        active === 'home' ? (projectDetails.length > 0 ? (<ProjectDetails projectId={projectDetails} />) : (
+        active === 'home' ? (projectDetails.length > 0 ? (<ProjectDetails projectName={projectDetails}/>) : (
           <div className='lg:ml-[260px] py-4 px-[0.8vw]'>
             <div className='pb-8 pt-4 border-b-2'>
               <h1 className='text-[3rem]'>Welcome {name.split(" ")[0]},</h1>
@@ -222,7 +222,7 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
             </div>
           </div>
         )) : (
-          active === 'projects' ? (projectDetails.length > 0 ? (<ProjectDetails projectId={projectDetails} />) : (
+          active === 'projects' ? (projectDetails.length > 0 ? (<ProjectDetails projectName={projectDetails} />) : (
             <div className='lg:ml-[260px] py-4 px-[0.8vw]'>
               <div className='col-span-2 row-span-2 bg-[#030711] p-4 rounded-lg border-[1px] border-gray-800'>
                 <h2 className='text-[32px] font-[600]'>My Projects</h2>

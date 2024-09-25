@@ -1,10 +1,10 @@
 import React from 'react'
-import CanvasWorkspaceLayout from '@/components/CanvasWorkspace'
+import Whiteboard from '@/components/CanvasWorkspace/WhiteBoard'
 
 const canvas = () => {
   return (
     <div>
-      <CanvasWorkspaceLayout/>
+      <Whiteboard/>
     </div>
   )
 }

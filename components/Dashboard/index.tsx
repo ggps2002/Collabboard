@@ -19,8 +19,8 @@ const DashboardLayout: React.FC<DashboardProps> = ({ name, email ,id }) => {
   const [ sidebarActive, setSidebarActive ] = useState('home');
   const [viewProjectDetails, setViewProjectDetails] = useState('');
 
-  const toggleViewProjectsDetails = (projectId: string) => {
-    setViewProjectDetails(projectId);
+  const toggleViewProjectsDetails = (name: string) => {
+    setViewProjectDetails(name);
   }
 
   const toggleSidebarActive = (active : string) => {

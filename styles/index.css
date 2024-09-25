@@ -106,3 +106,19 @@
     @apply opacity-100;
   }
 }
+
+/* Ensure that no background color changes occur */
+.toggle-group-item {
+  background-color: transparent !important;
+}
+
+.toggle-group-item-static {
+  background-color: transparent !important;
+}
+
+.toggle-group-item:hover,
+.toggle-group-item:active,
+.toggle-group-item:focus,
+.toggle-group-item[data-state='on'] {
+  background-color: rgb(208, 204, 204) !important;
+}
