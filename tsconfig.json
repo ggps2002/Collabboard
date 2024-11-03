@@ -38,7 +38,7 @@
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
-    "**/*.tsx",
+    "**/*.tsx", "components/CanvasWorkspace/WhiteBoard.jsx",
   ],
   "exclude": [
     "node_modules"

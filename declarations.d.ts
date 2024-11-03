@@ -8,4 +8,5 @@ declare module 'roughjs/bundled/rough.esm' {
   
     export default rough;
   }
-  
+
+  declare module 'react-resizable';
