@@ -1,8 +1,6 @@
 'use client'
 
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Draggable from 'react-draggable';
-import { Resizable } from "re-resizable";
 import rough from "roughjs/bundled/rough.esm";
 import getStroke from "perfect-freehand";
 import { GoPencil } from "react-icons/go";
@@ -11,6 +9,7 @@ import { MdOutlinePanTool } from "react-icons/md";
 import { IoArrowUndoOutline } from "react-icons/io5";
 import { IoArrowRedoOutline } from "react-icons/io5";
 import { CiImageOn } from "react-icons/ci";
+import { red } from "@mui/material/colors";
 
 const generator = rough.generator();
 
@@ -32,7 +31,8 @@ const createElement = (id, x1, y1, x2, y2, type, stroke) => {
     case "pencil":
       return {
         id, type, points: [{ x: x1, y: y1 }],
-        stroke: stroke,       // Sets the stroke color to white
+        stroke: stroke,
+               // Sets the stroke color to white
         // fill: "white",         // Sets the fill color to white
         // fillStyle: "solid"     // Ensures a solid fill
       };
@@ -82,6 +82,13 @@ const positionWithinElement = (x, y, element) => {
       return betweenAnyPoint ? "inside" : null;
     case "text":
       return x >= x1 && x <= x2 && y >= y1 && y <= y2 ? "inside" : null;
+    case "image":
+      // Assuming image has x, y, width, and height properties
+      const insideImage = x >= element.x && x <= element.x + element.width &&
+        y >= element.y && y <= element.y + element.height
+        ? "inside"
+        : null;
+      return insideImage;
     default:
       throw new Error(`Type not recognised: ${type}`);
   }
@@ -192,7 +199,7 @@ const drawElement = (roughCanvas, context, element) => {
       break;
     case "pencil":
       context.fillStyle = element.stroke;
-      const stroke = getSvgPathFromStroke(getStroke(element.points));
+      const stroke = getSvgPathFromStroke(getStroke(element.points, { size: 10 }));
       context.fill(new Path2D(stroke));
       break;
     case "text":
@@ -200,6 +207,11 @@ const drawElement = (roughCanvas, context, element) => {
       context.fillStyle = element.stroke;
       context.font = "24px sans-serif";
       context.fillText(element.text, element.x1, element.y1);
+      break;
+    case "image":
+      const img = new Image();
+      img.src = element.src;
+      img.onload = () => context.drawImage(img, element.x, element.y, element.width, element.height);
       break;
     default:
       throw new Error(`Type not recognised: ${element.type}`);
@@ -238,12 +250,18 @@ const usePressedKeys = () => {
 const App = () => {
   const [elements, setElements, undo, redo] = useHistory([]);
   const [action, setAction] = useState("none");
-  const [tool, setTool] = useState("rectangle");
+  const [tool, setTool] = useState("selection");
   const [selectedElement, setSelectedElement] = useState(null);
   const [panOffset, setPanOffset] = React.useState({ x: 0, y: 0 });
   const [startPanMousePosition, setStartPanMousePosition] = React.useState({ x: 0, y: 0 });
   const textAreaRef = useRef();
   const pressedKeys = usePressedKeys();
+  const fileInputRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [imageElement, setImageElement] = useState(null);
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+
 
   useLayoutEffect(() => {
     const canvas = document.getElementById("canvas");
@@ -256,11 +274,16 @@ const App = () => {
     context.translate(panOffset.x, panOffset.y);
 
     elements.forEach(element => {
-      if (action === "writing" && selectedElement.id === element.id) return;
+      if (action === "writing" && selectedElement?.id === element.id) return;
       drawElement(roughCanvas, context, element);
     });
+
+    if (imageElement) {
+      drawElement(roughCanvas, context, imageElement);
+    }
+
     context.restore();
-  }, [elements, action, selectedElement, panOffset]);
+  }, [elements, action, selectedElement, panOffset, imageElement]);
 
   useEffect(() => {
     const undoRedoFunction = event => {
@@ -325,6 +348,17 @@ const App = () => {
           text: options.text,
         };
         break;
+      case "image":
+        // Assuming options contains image source and dimensions
+        elementsCopy[id] = {
+          ...elementsCopy[id],
+          x: x1,
+          y: y1,
+          width: options.width,
+          height: options.height,
+          src: options.src,  // Assuming src holds the image URL or base64 string
+        };
+        break;
       default:
         throw new Error(`Type not recognised: ${type}`);
     }
@@ -342,6 +376,13 @@ const App = () => {
     if (action === "writing") return;
 
     const { clientX, clientY } = getMouseCoordinates(event);
+
+    if (imageElement &&
+      clientX >= imageElement.x && clientX <= imageElement.x + imageElement.width &&
+      clientY >= imageElement.y && clientY <= imageElement.y + imageElement.height) {
+      setIsDraggingImage(true);
+      setImageOffset({ x: clientX - imageElement.x, y: clientY - imageElement.y });
+    }
 
     if (event.button === 1 || pressedKeys.has(" ")) {
       setAction("panning");
@@ -381,6 +422,15 @@ const App = () => {
 
   const handleMouseMove = event => {
     const { clientX, clientY } = getMouseCoordinates(event);
+
+      if (isDraggingImage) {
+    // Update the image element position correctly during drag
+    setImageElement(prev => ({
+      ...prev,
+      x: clientX - imageOffset.x,
+      y: clientY - imageOffset.y,
+    }));
+  }
 
     if (action === "panning") {
       const deltaX = clientX - startPanMousePosition.x;
@@ -453,6 +503,7 @@ const App = () => {
 
     setAction("none");
     setSelectedElement(null);
+    setIsDraggingImage(false);
   };
 
   const handleBlur = event => {
@@ -462,12 +513,6 @@ const App = () => {
     updateElement(id, x1, y1, null, null, type, { text: event.target.value });
   };
 
-  const fileInputRef = useRef(null);
-  const [imageSrc, setImageSrc] = useState(null);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
-  const [isResizing, setIsResizing] = useState(false);
-  const [size, setSize] = useState({ width: 200, height: 200 });
-
   const handleDivClick = () => {
     fileInputRef.current.click();
   };
@@ -475,36 +520,37 @@ const App = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setImageSrc(url);
-    }
-  };
-
-  const handleDrag = (e, data) => {
-    try {
-      if (!isResizing) {
-        setPosition({ x: data.x, y: data.y }); // Update position only when not resizing
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const image = new Image();
+        image.src = e.target.result;
+        image.onload = () => {
+          const newImageElememt = {
+            id: new Date(),
+            type: "image",
+            x: 100,
+            y: 100,
+            width: 100,
+            height: 100,
+            src: image.src,
+          };
+          setElements(prevState => [...prevState, newImageElememt]);
+          setImageElement(newImageElememt);
+        };
       }
-    } catch (error) {
-      
+      reader.readAsDataURL(file);
     }
-      
+  };
+  const startDrag = (e) => {
+
   };
 
-  const handleResizeStart = () => {
-    setIsResizing(true);
+  const onDrag = (e) => {
+
   };
 
-  const handleResizeStop = (e, direction, ref, delta) => {
-    setIsResizing(false);
-    setSize((prevSize) => ({
-      width: Math.max(100, prevSize.width + delta.width),
-      height: Math.max(100, prevSize.height + delta.height),
-    }));
+  const drawCanvas = () => {
 
-    const newPosX = position.x; // Maintain the current X position
-    const newPosY = position.y; // Maintain the current Y position
-    setPosition({ x: newPosX, y: newPosY });
   };
 
   return (
@@ -566,52 +612,22 @@ const App = () => {
           }}
         />
       ) : null}
-      <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
-        {imageSrc && (
-          <Draggable
-            id="drag"
-            position={position}
-            bounds="parent"
-            onDrag={ isResizing ? null : handleDrag}
-          >
-            <Resizable
-              size={{ width: size.width, height: size.height }}
-              onResizeStart={handleResizeStart}
-              onResizeStop={handleResizeStop}
-              minWidth={100}
-              minHeight={100}
-              maxWidth={500}
-              maxHeight={500}
-              style={{
-                zIndex: 2,
-                position: "absolute",
-                overflow: "hidden",
-              }}>
-              <img
-                src={imageSrc}
-                alt="Uploaded"
-                className="rounded-lg"
-                style={{
-                  zIndex: 2,
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "cover",
-                  pointerEvents: "none", // Prevent pointer events on image
-                }}
-              />
-            </Resizable>
-          </Draggable>
-        )}
-        <canvas
-          id="canvas"
-          width={window.innerWidth}
-          height={window.innerHeight}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          style={{ position: "absolute", zIndex: 1, backgroundColor: "#1a1a1a" }}
-        />
-      </div>
+      <canvas
+        id="canvas"
+        ref={canvasRef}
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onMouseDown={
+          handleMouseDown
+        }
+        onMouseMove={
+          handleMouseMove
+        }
+        onMouseUp={
+          handleMouseUp
+        }
+        style={{ position: "absolute", zIndex: 1, backgroundColor: "#1a1a1a", cursor: tool === "pencil" ? "crosshair" : "default" }}
+      />
 
     </div>
   );
