@@ -425,6 +425,13 @@ const App = () => {
 
       if (isDraggingImage) {
     // Update the image element position correctly during drag
+    if (tool !== "selection") return;
+    elements.map(element => {
+      if (element.type === "image") {
+        element.x = clientX - imageOffset.x;
+        element.y = clientY - imageOffset.y;
+      }
+    });
     setImageElement(prev => ({
       ...prev,
       x: clientX - imageOffset.x,
@@ -578,7 +585,7 @@ const App = () => {
         </div>
         <div className="flex justify-center items-center p-3 hover:bg-slate-200" style={tool === "rectangle" ? { backgroundColor: "#DCE7F1" } : {}}
           onClick={() => setTool("rectangle")} >
-          <div className="h-4 w-4 border" />
+          <div className="h-4 w-4 border-dark" />
         </div>
         <div className="flex justify-center items-center p-3 hover:bg-slate-200" style={tool === "line" ? { backgroundColor: "#DCE7F1" } : {}}
           onClick={() => setTool("line")}>
