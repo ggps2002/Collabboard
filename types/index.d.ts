@@ -6679,3 +6679,5 @@ declare module "node-appwrite" {
     };
     export default rough;
   }
+
+  declare module 'react-modal-video';

@@ -62,7 +62,7 @@ const DashboardPage = () => {
 
     }
     getUserDetails();
-  }, [])
+  }, [router])
 
   return (
     <div>

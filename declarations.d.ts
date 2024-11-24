@@ -10,3 +10,5 @@ declare module 'roughjs/bundled/rough.esm' {
   }
 
   declare module 'react-resizable';
+
+  declare module 'react-modal-video';

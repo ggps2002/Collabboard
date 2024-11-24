@@ -58,7 +58,7 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
       }
     }
     getProjects();
-  }, [])
+  })
   const handleCreateProject = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);

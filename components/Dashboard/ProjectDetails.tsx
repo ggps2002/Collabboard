@@ -53,7 +53,7 @@ const ProjectDetails: React.FC<ProjectDetailsProps> = ({ projectName }) => {
             }
         }
         getProjectDetails()
-    }, [])
+    })
     return (
         isLoading ? (
             <div className='flex gap-8'>

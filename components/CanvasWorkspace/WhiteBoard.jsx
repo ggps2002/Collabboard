@@ -32,7 +32,7 @@ const createElement = (id, x1, y1, x2, y2, type, stroke) => {
       return {
         id, type, points: [{ x: x1, y: y1 }],
         stroke: stroke,
-               // Sets the stroke color to white
+        // Sets the stroke color to white
         // fill: "white",         // Sets the fill color to white
         // fillStyle: "solid"     // Ensures a solid fill
       };
@@ -199,7 +199,7 @@ const drawElement = (roughCanvas, context, element) => {
       break;
     case "pencil":
       context.fillStyle = element.stroke;
-      const stroke = getSvgPathFromStroke(getStroke(element.points, { size: 10 }));
+      const stroke = getSvgPathFromStroke(getStroke(element.points, { size: 7 }));
       context.fill(new Path2D(stroke));
       break;
     case "text":
@@ -248,6 +248,8 @@ const usePressedKeys = () => {
 };
 
 const App = () => {
+  const [windowWidth, setWindowWidth] = useState(0);
+  const [windowHeight, setWindowHeight] = useState(0);
   const [elements, setElements, undo, redo] = useHistory([]);
   const [action, setAction] = useState("none");
   const [tool, setTool] = useState("selection");
@@ -272,6 +274,11 @@ const App = () => {
 
     context.save();
     context.translate(panOffset.x, panOffset.y);
+
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    }
 
     elements.forEach(element => {
       if (action === "writing" && selectedElement?.id === element.id) return;
@@ -423,21 +430,21 @@ const App = () => {
   const handleMouseMove = event => {
     const { clientX, clientY } = getMouseCoordinates(event);
 
-      if (isDraggingImage) {
-    // Update the image element position correctly during drag
-    if (tool !== "selection") return;
-    elements.map(element => {
-      if (element.type === "image") {
-        element.x = clientX - imageOffset.x;
-        element.y = clientY - imageOffset.y;
-      }
-    });
-    setImageElement(prev => ({
-      ...prev,
-      x: clientX - imageOffset.x,
-      y: clientY - imageOffset.y,
-    }));
-  }
+    if (isDraggingImage) {
+      // Update the image element position correctly during drag
+      if (tool !== "selection") return;
+      elements.map(element => {
+        if (element.type === "image") {
+          element.x = clientX - imageOffset.x;
+          element.y = clientY - imageOffset.y;
+        }
+      });
+      setImageElement(prev => ({
+        ...prev,
+        x: clientX - imageOffset.x,
+        y: clientY - imageOffset.y,
+      }));
+    }
 
     if (action === "panning") {
       const deltaX = clientX - startPanMousePosition.x;
@@ -622,8 +629,8 @@ const App = () => {
       <canvas
         id="canvas"
         ref={canvasRef}
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={windowWidth}
+        height={windowHeight}
         onMouseDown={
           handleMouseDown
         }
