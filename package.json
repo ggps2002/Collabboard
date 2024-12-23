@@ -11,6 +11,7 @@
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@excalidraw/excalidraw": "^0.17.6",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/react-fontawesome": "^0.2.2",
@@ -35,6 +36,7 @@
     "eslint": "8.33.0",
     "eslint-config-next": "13.1.6",
     "js-cookie": "^3.0.5",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.436.0",
     "next": "^14.2.6",
     "next-themes": "^0.2.1",
