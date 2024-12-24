@@ -1,12 +1,19 @@
 'use client';
 
-import { Excalidraw } from "@excalidraw/excalidraw";
 import React, { useState, useEffect, useCallback } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import DeleteIcon from '@mui/icons-material/Delete';
 import debounce from "lodash.debounce";
+import dynamic from "next/dynamic";
+
+const Excalidraw = dynamic(
+  async () => (await import("@excalidraw/excalidraw")).Excalidraw,
+  {
+    ssr: false,
+  },
+);
 
 export default function WhiteBoard() {
   const [scenes, setScenes] = useState([{}]); // Initialize with one empty scene
@@ -59,20 +66,20 @@ export default function WhiteBoard() {
     if (excalidrawAPIs[currentPage]) {
       const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
       const appState = excalidrawAPIs[currentPage].getAppState();
+      const files = excalidrawAPIs[currentPage].getFiles();
 
-      console.log("Updated scene:", sceneElements, appState);
-
-      
       setScenes((prevScenes) => {
         const updatedScenes = [...prevScenes];
         updatedScenes[currentPage] = {
           elements: JSON.parse(JSON.stringify(sceneElements)), // Deep copy elements
           appState: JSON.parse(JSON.stringify(appState)), // Deep copy appState
+          files, // Save image files separately
         };
         return updatedScenes;
       });
     }
   }, [currentPage, excalidrawAPIs]);
+
 
   // Store Excalidraw API instances for each page
   const handleAPI = useCallback((api, pageIndex) => {
@@ -85,9 +92,15 @@ export default function WhiteBoard() {
 
   useEffect(() => {
     if (excalidrawAPIs[currentPage]) {
+      let once = false;
       const handleChange = debounce(() => {
         updateScene();
-      }, 500);
+        console.log("Scenes:", scenes);
+        if(!once) {
+          excalidrawAPIs[currentPage].updateScene(scenes[currentPage]);
+          once = true
+        }
+      }, 10);
 
       excalidrawAPIs[currentPage].onChange(handleChange);
 
@@ -150,7 +163,7 @@ export default function WhiteBoard() {
 
       {/* Excalidraw Canvas */}
       <Excalidraw
-        key={currentPage} // Force re-render when the page changes
+        key={currentPage}
         excalidrawAPI={(api) => handleAPI(api, currentPage)}
         initialData={{
           elements: scenes[currentPage]?.elements || [],
@@ -158,6 +171,7 @@ export default function WhiteBoard() {
             ...scenes[currentPage]?.appState,
             collaborators: scenes[currentPage]?.appState?.collaborators || [],
           },
+          files: scenes[currentPage]?.files || {},
         }}
         style={{ position: "absolute", height: "100%", width: "100%" }}
       />

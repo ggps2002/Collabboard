@@ -1,10 +1,12 @@
 import React from 'react'
-import Whiteboard from '@/components/CanvasWorkspace/WhiteBoard'
+import dynamic from 'next/dynamic'
+
+const WhiteBoard = dynamic(() => import('@/components/CanvasWorkspace/WhiteBoard'), { ssr: false })
 
 const canvas = () => {
   return (
     <div>
-      <Whiteboard/>
+      <WhiteBoard/>
     </div>
   )
 }
