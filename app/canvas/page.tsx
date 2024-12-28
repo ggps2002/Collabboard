@@ -1,14 +1,15 @@
-import React from 'react'
-import dynamic from 'next/dynamic'
+'use client';
 
-const WhiteBoard = dynamic(() => import('@/components/CanvasWorkspace/WhiteBoard'), { ssr: false })
+import React, { useState, useEffect } from 'react';
+import WhiteBoard from '@/components/CanvasWorkspace/WhiteBoard';
 
-const canvas = () => {
+const Canvas = () => {
   return (
     <div>
-      <WhiteBoard/>
+      <WhiteBoard />
     </div>
-  )
-}
+  );
+};
 
-export default canvas
+export default Canvas;
+
