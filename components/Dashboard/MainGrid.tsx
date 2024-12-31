@@ -48,9 +48,7 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
           process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID!,
           [Query.or([Query.contains('userId', [id]), Query.equal('projectId', [id])])]
         )
-        setUserProjects((prev) => (
-          [...prev, ...project.documents]
-        ))
+        setUserProjects([...project.documents])
         setIsLoading(false);
       }
       catch (error) {
@@ -58,7 +56,7 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
       }
     }
     getProjects();
-  })
+  },[id])
   const handleCreateProject = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);

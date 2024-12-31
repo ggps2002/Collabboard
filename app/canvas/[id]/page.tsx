@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import WhiteBoard from '@/components/CanvasWorkspace/WhiteBoard';
 
-const Canvas = () => {
+const Canvas = ({ params }: { params: { id: string } }) => {
   return (
     <div>
-      <WhiteBoard />
+      <WhiteBoard id={params.id} />
     </div>
   );
 };
 
 export default Canvas;
+
 

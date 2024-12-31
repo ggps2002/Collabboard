@@ -57,6 +57,27 @@ interface NewProjectProps {
 
 const NewProjectDiv: React.FC<NewProjectProps> = ({ id, name, users, toggleProjectDetails, deleteProject }) => {
   const router = useRouter();
+  const handleViewClick = async() => {
+    try {
+      const client = new Client();
+      client
+          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+      const database = new Databases(client);
+      const response = await database.listDocuments(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID!,
+        [Query.equal('name',[name])]
+      )
+      if(response.documents.length > 0) {
+        const documentId = response.documents[0].$id;
+        router.push('/canvas/' + documentId);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   const handleProjectDelete = async() => {
     try {
       const client = new Client();
@@ -91,6 +112,7 @@ const NewProjectDiv: React.FC<NewProjectProps> = ({ id, name, users, toggleProje
         console.error('Failed to copy text: ', err);
       });
   }
+
   return (
     <div className='min-h-[7vw] border-t-2 border-b-1 p-[2vw] '>
       <div className='flex justify-between'>
@@ -175,9 +197,7 @@ const NewProjectDiv: React.FC<NewProjectProps> = ({ id, name, users, toggleProje
           </div>
         </div>
         <div className='flex'>
-          <Button className='mr-4' onClick={() => {
-            router.push('/canvas')
-          }}>View</Button>
+          <Button className='mr-4' onClick={handleViewClick}>View</Button>
           <AlertDialog>
             <AlertDialogTrigger>
               <Button variant="destructive" >Delete</Button>

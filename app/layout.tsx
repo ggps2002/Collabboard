@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isSpecialLayout = pathname === '/dashboard' || pathname === '/canvas';
+  const isSpecialLayout = pathname === '/dashboard' || pathname.startsWith('/canvas/');
   return (
     <html suppressHydrationWarning lang="en">
       {/*
