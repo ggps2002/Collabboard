@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Client, Account, OAuthProvider, ID } from "appwrite";
 
-const url = process.env.PRODUCTION_URL || 'http://localhost:3000';
+const url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 const SignupPage: React.FC = () => {
   const router = useRouter();

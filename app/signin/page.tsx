@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 //   // other metadata
 // };
 
-const url = process.env.PRODUCTION_URL || 'http://localhost:3000'
+const url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
 const SigninPage = () => {
   const [userPassword, setUserPassword] = useState('');
