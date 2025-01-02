@@ -69,9 +69,9 @@ const NewProjectDiv: React.FC<NewProjectProps> = ({ id, name, users, toggleProje
         process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID!,
         [Query.equal('name',[name])]
       )
-      if(response.documents.length > 0) {
+      if (response.documents.length > 0) {
         const documentId = response.documents[0].$id;
-        router.push('/canvas/' + documentId);
+        window.open('/canvas/' + documentId, '_blank');
       }
     } catch (error) {
       console.error(error);

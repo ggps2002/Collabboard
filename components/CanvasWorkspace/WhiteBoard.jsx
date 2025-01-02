@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef, use } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Client, Account, ID, Databases, Query } from 'appwrite';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -64,7 +64,7 @@ export default function WhiteBoard({ id }) {
             try {
               const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
               console.log(parsedScene);
-              setScenes(parsedScene);
+              setScenes([...parsedScene]);
               console.log(scenes);
               console.log("Scene loaded successfully!");
             } catch (error) {
@@ -118,7 +118,7 @@ export default function WhiteBoard({ id }) {
     // Call saveScene every 30 seconds
     const intervalId = setInterval(() => {
       saveScene();
-    }, 10000); // 30000 milliseconds = 30 seconds
+    }, 10000); // 10000 milliseconds = 180 seconds
 
     // Cleanup the interval when the component is unmounted
     return () => clearInterval(intervalId);
