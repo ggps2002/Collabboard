@@ -11,7 +11,7 @@ const DashboardPage = () => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const isMounted = useRef(false);
   const router = useRouter();
   useEffect(() => {
@@ -53,7 +53,7 @@ const DashboardPage = () => {
         setUserEmail(user.email);
         setUserName(user.name);
         setUserId(user.$id);
-        setIsLoading(false);
+        // setIsLoading(false);
       }
       catch (error) {
         console.error(error);
@@ -67,8 +67,8 @@ const DashboardPage = () => {
   return (
     <div>
       {
-        isLoading?
-        (<Transition />) :
+        // isLoading?
+        // (<Transition />) :
         <Dashboard name={userName} email={userEmail} id={userId}/> 
       }
     </div>
