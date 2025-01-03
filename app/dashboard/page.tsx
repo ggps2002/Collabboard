@@ -11,7 +11,7 @@ const DashboardPage = () => {
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const isMounted = useRef(false);
   const router = useRouter();
   useEffect(() => {
@@ -28,32 +28,32 @@ const DashboardPage = () => {
         const account = new Account(client);
         const user = await account.get();
         if (!user) throw new Error('User not found')
-        // const database = new Databases(client);
-        // const existingUser = await database.listDocuments(
-        //   process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        //   process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
-        //   [Query.equal('userId', [user.$id])]
-        // )
-        // console.log('Existing user:',existingUser);
-        // if(!existingUser.documents.length) {
-        //   const response = await database.createDocument(
-        //     process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
-        //     process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
-        //     ID.unique(),
-        //     {
-        //       userId: user.$id,
-        //       name: user.name,
-        //       email: user.email,
-        //     }
-        //   )
-        //   if (!response) {
-        //     throw new Error('Error adding user to database');
-        //   }
-        // }
+        const database = new Databases(client);
+        const existingUser = await database.listDocuments(
+          process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+          [Query.equal('userId', [user.$id])]
+        )
+        console.log('Existing user:',existingUser);
+        if(!existingUser.documents.length) {
+          const response = await database.createDocument(
+            process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+            process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
+            ID.unique(),
+            {
+              userId: user.$id,
+              name: user.name,
+              email: user.email,
+            }
+          )
+          if (!response) {
+            throw new Error('Error adding user to database');
+          }
+        }
         setUserEmail(user.email);
         setUserName(user.name);
         setUserId(user.$id);
-        setIsLoading(false);
+        // setIsLoading(false);
       }
       catch (error) {
         console.error(error);
@@ -67,8 +67,8 @@ const DashboardPage = () => {
   return (
     <div>
       {
-        isLoading?
-        (<Transition />) :
+        // isLoading?
+        // (<Transition />) :
         <Dashboard name={userName} email={userEmail} id={userId}/> 
       }
     </div>
