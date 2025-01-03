@@ -29,6 +29,12 @@ const DashboardPage = () => {
         const user = await account.get();
         if (!user) throw new Error('User not found')
         const database = new Databases(client);
+        const allDocuments = await database.listDocuments(
+          process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+          process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!
+        );
+        console.log("All documents:", allDocuments);
+        
         const existingUser = await database.listDocuments(
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
           process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!,
