@@ -119,7 +119,6 @@ export default function WhiteBoard({ id }) {
   // }, [id, scenesRef]); // Adding dependencies so it runs whenever `id` or `scenes` change
   // Add a new page
   const handleAddPage = () => {
-    updateScene(); // Save current page's scene data
     setScenes((prevScenes) => {
       const newScenes = [...prevScenes, { elements: [], appState: {} }];
       setCurrentPage(newScenes.length - 1);
@@ -130,7 +129,6 @@ export default function WhiteBoard({ id }) {
   // Delete the current page
   const handleDeletePage = () => {
     if (scenes.length > 1) {
-      updateScene(); // Save current page's scene data
       setScenes((prevScenes) => {
         const updatedScenes = [...prevScenes];
         updatedScenes.splice(currentPage, 1); // Remove the current page
@@ -144,7 +142,6 @@ export default function WhiteBoard({ id }) {
 
   // Move to the next page
   const handleNextPage = () => {
-    updateScene(); // Save current page's scene data
     if (currentPage < scenes.length - 1) {
       setCurrentPage(currentPage + 1);
     }
@@ -152,7 +149,6 @@ export default function WhiteBoard({ id }) {
 
   // Move to the previous page
   const handlePreviousPage = () => {
-    updateScene(); // Save current page's scene data
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
     }
