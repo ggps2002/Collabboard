@@ -25,6 +25,7 @@ const DashboardPage = () => {
         client
           .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
           .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
+        console.log(client);
         const account = new Account(client);
         const user = await account.get();
         if (!user) throw new Error('User not found')
