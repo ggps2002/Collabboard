@@ -17,6 +17,7 @@ const DashboardPage = () => {
   const router = useRouter();
   useEffect(() => {
     const getUserDetails = async () => {
+      console.log("Getting user details");
       if (!isMounted.current) {
         isMounted.current = true;
         return;
