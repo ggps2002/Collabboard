@@ -13,15 +13,10 @@ const DashboardPage = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userId, setUserId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const isMounted = useRef(false);
   const router = useRouter();
   useEffect(() => {
     const getUserDetails = async () => {
       console.log("Fuction to get user details");
-      if (!isMounted.current) {
-        isMounted.current = true;
-        return;
-      }
       console.log("Getting user details");
       try {
         const user = await account.get();
