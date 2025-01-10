@@ -30,13 +30,8 @@ const MainGrid: React.FC<MainGridProps> = ({ id, name, active, projectDetails, t
   const [projectName, setProjectName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [projectInviteCode, setProjectInviteCode] = useState('');
-  const isMounted = useRef(false);
   useEffect(() => {
     const getProjects = async () => {
-      if (!isMounted.current) {
-        isMounted.current = true;
-        return;
-      }
       try {
         const client = new Client();
         client
