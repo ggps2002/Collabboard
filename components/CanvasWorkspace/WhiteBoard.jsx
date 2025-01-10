@@ -238,7 +238,7 @@ export default function WhiteBoard({ id }) {
       const handleChange = debounce(() => {
         updateScene();
         console.log("Scenes (ref):", scenesRef.current);
-        if (!once && scenesRef.current[currentPage]) {
+        if (!once && scenesRef.current[currentPage].elements.length > 0 || scenesRef.current[currentPage].files.length > 0) {
           excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
           once = true;
         }
