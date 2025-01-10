@@ -60,6 +60,7 @@ export default function WhiteBoard({ id }) {
               const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
               console.log(parsedScene);
               setScenes(parsedScene);
+              scenesRef.current = parsedScene;
               console.log(scenes);
               console.log("Scene loaded successfully!");
             } catch (error) {
