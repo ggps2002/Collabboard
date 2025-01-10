@@ -92,7 +92,7 @@ export default function WhiteBoard({ id }) {
           [Query.equal("$id", id)]
         );
         console.log(project.documents[0]);
-        if (project.documents[0]) {
+        if (project.documents[0] && scenesRef.current[currentPage].elements.length > 0 && scenesRef.current[currentPage].files > 0) {  
           const updatedScene = scenesRef.current.map((scene) => JSON.stringify(scene));
           console.log(updatedScene);
           await database.updateDocument(
