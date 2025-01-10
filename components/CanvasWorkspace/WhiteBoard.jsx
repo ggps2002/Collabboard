@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, use } from "react";
 import { Client, Account, ID, Databases, Query } from 'appwrite';
 import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -37,11 +37,16 @@ export default function WhiteBoard({ id }) {
   const [scenes, setScenes] = useState([{}]); // Initialize with one empty scene
   const [currentPage, setCurrentPage] = useState(0);
   const [excalidrawAPIs, setExcalidrawAPIs] = useState([]); // Store API instances for each page
+  const isMounted = useRef(false);
   const scenesRef = useRef(scenes); // Ref to track the latest scenes
 
   // set the scene from the data saved on appwrite projects database
   useEffect(() => {
     const mountScene = async () => {
+      if (!isMounted.current) {
+        isMounted.current = true;
+        return;
+      } else {
         try {
           console.log(id);
           const client = new Client();
@@ -59,7 +64,7 @@ export default function WhiteBoard({ id }) {
             try {
               const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
               console.log(parsedScene);
-              setScenes([...parsedScene]);
+              setScenes(parsedScene);
               console.log(scenes);
               console.log("Scene loaded successfully!");
             } catch (error) {
@@ -67,10 +72,12 @@ export default function WhiteBoard({ id }) {
               setScenes([]); // Default to an empty array if parsing fails
             }
           }
+          isMounted.current = true;
         } catch (error) {
           console.error(error);
         }
       }
+    }
 
     mountScene();
 
@@ -92,7 +99,7 @@ export default function WhiteBoard({ id }) {
           [Query.equal("$id", id)]
         );
         console.log(project.documents[0]);
-        if (project.documents[0] && scenesRef.current[currentPage].elements.length > 0 && scenesRef.current[currentPage].files > 0) {  
+        if (project.documents[0]) {
           const updatedScene = scenesRef.current.map((scene) => JSON.stringify(scene));
           console.log(updatedScene);
           await database.updateDocument(
@@ -111,7 +118,7 @@ export default function WhiteBoard({ id }) {
     // Call saveScene every 30 seconds
     const intervalId = setInterval(() => {
       saveScene();
-    }, 10000); // 10000 milliseconds = 180 seconds
+    }, 10000); // 30000 milliseconds = 30 seconds
 
     // Cleanup the interval when the component is unmounted
     return () => clearInterval(intervalId);
@@ -235,13 +242,11 @@ export default function WhiteBoard({ id }) {
     if (excalidrawAPIs[currentPage]) {
       let once = false;
       const handleChange = debounce(() => {
-        if (scenesRef.current[currentPage].elements.length === scenes[currentPage].elements.length && scenesRef.current[currentPage].files.length === scenes[currentPage].files.length) { 
-          updateScene();
-          console.log("Scenes (ref):", scenesRef.current);
-          if (!once && scenesRef.current[currentPage]) {
-            excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
-            once = true;
-          }  
+        updateScene();
+        console.log("Scenes (ref):", scenesRef.current);
+        if (!once && scenesRef.current[currentPage]) {
+          excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
+          once = true;
         }
       }, 100);
   
