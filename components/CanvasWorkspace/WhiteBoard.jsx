@@ -78,45 +78,45 @@ export default function WhiteBoard({ id }) {
   }, [id])
 
   // Save the current page's scene data
-  useEffect(() => {
-    const saveScene = async () => {
-      try {
-        console.log(id);
-        const client = new Client();
-        client
-          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
-        const database = new Databases(client);
-        const project = await database.listDocuments(
-          process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-          process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
-          [Query.equal("$id", id)]
-        );
-        console.log(project.documents[0]);
-        if (project.documents[0]) {
-          const updatedScene = scenesRef.current.map((scene) => JSON.stringify(scene));
-          console.log(updatedScene);
-          await database.updateDocument(
-            process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-            process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
-            project.documents[0].$id,
-            { scene: updatedScene }
-          );
-          console.log("Scene saved successfully!");
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  // useEffect(() => {
+  //   const saveScene = async () => {
+  //     try {
+  //       console.log(id);
+  //       const client = new Client();
+  //       client
+  //         .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
+  //         .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
+  //       const database = new Databases(client);
+  //       const project = await database.listDocuments(
+  //         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
+  //         process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
+  //         [Query.equal("$id", id)]
+  //       );
+  //       console.log(project.documents[0]);
+  //       if (project.documents[0]) {
+  //         const updatedScene = scenesRef.current.map((scene) => JSON.stringify(scene));
+  //         console.log(updatedScene);
+  //         await database.updateDocument(
+  //           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
+  //           process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
+  //           project.documents[0].$id,
+  //           { scene: updatedScene }
+  //         );
+  //         console.log("Scene saved successfully!");
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   };
 
-    // Call saveScene every 30 seconds
-    const intervalId = setInterval(() => {
-      saveScene();
-    }, 10000); // 30000 milliseconds = 30 seconds
+  //   // Call saveScene every 30 seconds
+  //   const intervalId = setInterval(() => {
+  //     saveScene();
+  //   }, 10000); // 30000 milliseconds = 30 seconds
 
-    // Cleanup the interval when the component is unmounted
-    return () => clearInterval(intervalId);
-  }, [id, scenesRef]); // Adding dependencies so it runs whenever `id` or `scenes` change
+  //   // Cleanup the interval when the component is unmounted
+  //   return () => clearInterval(intervalId);
+  // }, [id, scenesRef]); // Adding dependencies so it runs whenever `id` or `scenes` change
   // Add a new page
   const handleAddPage = () => {
     updateScene(); // Save current page's scene data
