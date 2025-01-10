@@ -254,7 +254,7 @@ export default function WhiteBoard({ id }) {
   
 
   return (
-    <div className="w-screen h-screen">
+    <div className="w-screen h-screen overflow-hidden">
       {/* Excalidraw Canvas */}
       <div className="h-[93%] w-full">
         <Excalidraw
