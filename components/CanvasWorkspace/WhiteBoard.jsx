@@ -197,24 +197,24 @@ export default function WhiteBoard({ id }) {
   };
 
   // Update the current page's drawing data
-  const updateScene = useCallback(() => {
-    if (excalidrawAPIs[currentPage]) {
-      const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
-      const appState = excalidrawAPIs[currentPage].getAppState();
-      const files = excalidrawAPIs[currentPage].getFiles();
+  // const updateScene = useCallback(() => {
+  //   if (excalidrawAPIs[currentPage]) {
+  //     const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
+  //     const appState = excalidrawAPIs[currentPage].getAppState();
+  //     const files = excalidrawAPIs[currentPage].getFiles();
 
-      setScenes((prevScenes) => {
-        const updatedScenes = [...prevScenes];
-        updatedScenes[currentPage] = {
-          elements: JSON.parse(JSON.stringify(sceneElements)), // Deep copy elements
-          appState: JSON.parse(JSON.stringify(appState)), // Deep copy appState
-          files, // Save image files separately
-        };
-        scenesRef.current = updatedScenes; // Update the ref immediately
-        return updatedScenes;
-      });
-    }
-  }, [currentPage, excalidrawAPIs]);
+  //     setScenes((prevScenes) => {
+  //       const updatedScenes = [...prevScenes];
+  //       updatedScenes[currentPage] = {
+  //         elements: JSON.parse(JSON.stringify(sceneElements)), // Deep copy elements
+  //         appState: JSON.parse(JSON.stringify(appState)), // Deep copy appState
+  //         files, // Save image files separately
+  //       };
+  //       scenesRef.current = updatedScenes; // Update the ref immediately
+  //       return updatedScenes;
+  //     });
+  //   }
+  // }, [currentPage, excalidrawAPIs]);
 
 
   // Store Excalidraw API instances for each page
@@ -228,29 +228,29 @@ export default function WhiteBoard({ id }) {
 
 
 
-  useEffect(() => {
-    scenesRef.current = scenes; // Keep the ref updated with the latest state
-  }, [scenes]);
+  // useEffect(() => {
+  //   scenesRef.current = scenes; // Keep the ref updated with the latest state
+  // }, [scenes]);
 
-  useEffect(() => {
-    if (excalidrawAPIs[currentPage]) {
-      let once = false;
-      const handleChange = debounce(() => {
-        if (!once && scenesRef.current[currentPage].elements.length > 0 || scenesRef.current[currentPage].files.length > 0) {
-          updateScene();
-          console.log("Scenes (ref):", scenesRef.current);
-          excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
-          once = true;
-        }
-      }, 100);
+  // useEffect(() => {
+  //   if (excalidrawAPIs[currentPage]) {
+  //     let once = false;
+  //     const handleChange = debounce(() => {
+  //       if (!once && scenesRef.current[currentPage].elements.length > 0 || scenesRef.current[currentPage].files.length > 0) {
+  //         updateScene();
+  //         console.log("Scenes (ref):", scenesRef.current);
+  //         excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
+  //         once = true;
+  //       }
+  //     }, 100);
 
-      excalidrawAPIs[currentPage].onChange(handleChange);
+  //     excalidrawAPIs[currentPage].onChange(handleChange);
 
-      return () => {
-        handleChange.cancel(); // Cleanup debounce on unmount
-      };
-    }
-  }, [excalidrawAPIs, currentPage]);
+  //     return () => {
+  //       handleChange.cancel(); // Cleanup debounce on unmount
+  //     };
+  //   }
+  // }, [excalidrawAPIs, currentPage]);
 
 
   return (
@@ -260,6 +260,7 @@ export default function WhiteBoard({ id }) {
         <Excalidraw
           key={currentPage}
           excalidrawAPI={(api) => handleAPI(api, currentPage)}
+          onChange={updateScene}
           initialData={{
             elements: scenes[currentPage]?.elements || [],
             appState: {
