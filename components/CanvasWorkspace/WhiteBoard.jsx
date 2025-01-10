@@ -256,7 +256,7 @@ export default function WhiteBoard({ id }) {
         <Excalidraw
           key={currentPage}
           excalidrawAPI={(api) => handleAPI(api, currentPage)}
-          onChange={updateScene}
+          // onChange={updateScene}
           initialData={{
             elements: scenes[currentPage]?.elements || [],
             appState: {
