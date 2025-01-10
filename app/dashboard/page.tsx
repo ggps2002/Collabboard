@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Client, Account, ID, Databases, Query } from 'appwrite'
+import { client, account, database } from '@/components/utils/appwrite'
+import { Query, ID } from 'appwrite'
 import Dashboard from '@/components/Dashboard'
 import Transition from '@/components/Transition'
 import React from 'react'
@@ -21,15 +22,8 @@ const DashboardPage = () => {
         return;
       }
       try {
-        const client = new Client();
-        client
-          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
-        console.log(client);
-        const account = new Account(client);
         const user = await account.get();
-        if (!user) throw new Error('User not found')
-        const database = new Databases(client);
+        if (!user) throw new Error('User not found');
         const allDocuments = await database.listDocuments(
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
           process.env.NEXT_PUBLIC_APPWRITE_USER_COLLECTION_ID!

@@ -3,6 +3,7 @@
 import { useEffect, FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { client, account, database } from '@/components/utils/appwrite';
 import { Client, Account, OAuthProvider, ID } from "appwrite";
 
 const url = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -15,11 +16,6 @@ const SignupPage: React.FC = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const client = new Client();
-        client
-          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
-        const account = new Account(client);
         const userAuthenticated = await account.get();
         console.log('User authentication status:', userAuthenticated);
         if (userAuthenticated) {
@@ -34,12 +30,6 @@ const SignupPage: React.FC = () => {
   }, [router]);
 
   const signUpWithGoogle = async () => {
-    const client = new Client()
-      .setEndpoint('https://cloud.appwrite.io/v1')
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
-
-    const account = new Account(client);
-
     try {
       await account.createOAuth2Session(
         OAuthProvider.Google,
@@ -52,12 +42,6 @@ const SignupPage: React.FC = () => {
   }
 
   const signUpWithGithub = async () => {
-    const client = new Client()
-      .setEndpoint('https://cloud.appwrite.io/v1')
-      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!)
-
-    const account = new Account(client);
-
     try {
       await account.createOAuth2Session(
         OAuthProvider.Github,
@@ -73,11 +57,6 @@ const SignupPage: React.FC = () => {
   const handleEmailSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const client = new Client();
-      client
-        .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-        .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT!);
-      const account = new Account(client);
       const user = await account.create(
         ID.unique(),
         email,
