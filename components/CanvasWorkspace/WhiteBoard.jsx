@@ -236,11 +236,13 @@ export default function WhiteBoard({ id }) {
     if (excalidrawAPIs[currentPage]) {
       let once = false;
       const handleChange = debounce(() => {
-        updateScene();
-        console.log("Scenes (ref):", scenesRef.current);
-        if (!once && scenesRef.current[currentPage]) {
-          excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
-          once = true;
+        if (scenesRef.current[currentPage] === scenes[currentPage]) {
+          updateScene();
+          console.log("Scenes (ref):", scenesRef.current);
+          if (!once && scenesRef.current[currentPage]) {
+            excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
+            once = true;
+          } 
         }
       }, 100);
   
