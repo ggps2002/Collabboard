@@ -37,16 +37,11 @@ export default function WhiteBoard({ id }) {
   const [scenes, setScenes] = useState([{}]); // Initialize with one empty scene
   const [currentPage, setCurrentPage] = useState(0);
   const [excalidrawAPIs, setExcalidrawAPIs] = useState([]); // Store API instances for each page
-  const isMounted = useRef(false);
   const scenesRef = useRef(scenes); // Ref to track the latest scenes
 
   // set the scene from the data saved on appwrite projects database
   useEffect(() => {
     const mountScene = async () => {
-      if (!isMounted.current) {
-        isMounted.current = true;
-        return;
-      } else {
         try {
           console.log(id);
           const client = new Client();
@@ -72,11 +67,9 @@ export default function WhiteBoard({ id }) {
               setScenes([]); // Default to an empty array if parsing fails
             }
           }
-          isMounted.current = true;
         } catch (error) {
           console.error(error);
         }
-      }
     }
 
     mountScene();
