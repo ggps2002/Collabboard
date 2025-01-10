@@ -17,11 +17,12 @@ const DashboardPage = () => {
   const router = useRouter();
   useEffect(() => {
     const getUserDetails = async () => {
-      console.log("Getting user details");
+      console.log("Fuction to get user details");
       if (!isMounted.current) {
         isMounted.current = true;
         return;
       }
+      console.log("Getting user details");
       try {
         const user = await account.get();
         if (!user) throw new Error('User not found');
