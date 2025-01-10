@@ -42,35 +42,35 @@ export default function WhiteBoard({ id }) {
   // set the scene from the data saved on appwrite projects database
   useEffect(() => {
     const mountScene = async () => {
-        try {
-          console.log(id);
-          const client = new Client();
-          client
-            .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-            .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
-          const database = new Databases(client);
-          const project = await database.listDocuments(
-            process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-            process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
-            [Query.equal("$id", id)]
-          );
-          console.log(project.documents[0]);
-          if (project.documents[0] && project.documents[0].scene.length > 0) {
-            try {
-              const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
-              console.log(parsedScene);
-              setScenes(parsedScene);
-              scenesRef.current = parsedScene;
-              console.log(scenes);
-              console.log("Scene loaded successfully!");
-            } catch (error) {
-              console.error("Failed to parse scene JSON:", error);
-              setScenes([]); // Default to an empty array if parsing fails
-            }
+      try {
+        console.log(id);
+        const client = new Client();
+        client
+          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
+          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
+        const database = new Databases(client);
+        const project = await database.listDocuments(
+          process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
+          process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
+          [Query.equal("$id", id)]
+        );
+        console.log(project.documents[0]);
+        if (project.documents[0] && project.documents[0].scene.length > 0) {
+          try {
+            const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
+            console.log(parsedScene);
+            setScenes(parsedScene);
+            scenesRef.current = parsedScene;
+            console.log(scenes);
+            console.log("Scene loaded successfully!");
+          } catch (error) {
+            console.error("Failed to parse scene JSON:", error);
+            setScenes([]); // Default to an empty array if parsing fails
           }
-        } catch (error) {
-          console.error(error);
         }
+      } catch (error) {
+        console.error(error);
+      }
     }
 
     mountScene();
@@ -231,27 +231,27 @@ export default function WhiteBoard({ id }) {
   useEffect(() => {
     scenesRef.current = scenes; // Keep the ref updated with the latest state
   }, [scenes]);
-  
+
   useEffect(() => {
     if (excalidrawAPIs[currentPage]) {
       let once = false;
       const handleChange = debounce(() => {
-        updateScene();
-        console.log("Scenes (ref):", scenesRef.current);
         if (!once && scenesRef.current[currentPage].elements.length > 0 || scenesRef.current[currentPage].files.length > 0) {
+          updateScene();
+          console.log("Scenes (ref):", scenesRef.current);
           excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
           once = true;
         }
       }, 100);
-  
+
       excalidrawAPIs[currentPage].onChange(handleChange);
-  
+
       return () => {
         handleChange.cancel(); // Cleanup debounce on unmount
       };
     }
   }, [excalidrawAPIs, currentPage]);
-  
+
 
   return (
     <div className="w-screen h-screen overflow-hidden">
