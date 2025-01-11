@@ -232,25 +232,40 @@ export default function WhiteBoard({ id }) {
     console.log("Scene Updated",elements, appState, files);
   };
 
+  const excal = useMemo(() => {
+    return (
+      <Excalidraw
+      key={currentPage}
+      onChange={(elements, appState, files) => {
+        setScenes((prevScenes) => {
+          const updatedScenes = [...prevScenes];
+          updatedScenes[currentPage].elements = elements;
+          updatedScenes[currentPage].appState = appState;
+          updatedScenes[currentPage].files = files;
+          return updatedScenes;
+        })
+        console.log("Scene Updated",elements, appState, files);
+      }}
+      excalidrawAPI={(api) => handleAPI(api, currentPage)}
+      initialData={{
+        elements: scenes[currentPage]?.elements || [],
+        appState: {
+          ...scenes[currentPage]?.appState,
+          collaborators: scenes[currentPage]?.appState?.collaborators || [],
+        },
+        files: scenes[currentPage]?.files || {},
+      }}
+      style={{ width: "100%", height: "100%" }}
+    />
+    )
+  }, [currentPage, excalidrawAPIs]);
+
   return (
     isLoading? <Transition /> : (
       <div className="w-screen h-screen overflow-hidden">
       {/* Excalidraw Canvas */}
       <div className="h-[93%] w-full">
-        <Excalidraw
-          key={currentPage}
-          onChange={(elements, appState, files) => handleChange(elements, appState, files)}
-          excalidrawAPI={(api) => handleAPI(api, currentPage)}
-          initialData={{
-            elements: scenes[currentPage]?.elements || [],
-            appState: {
-              ...scenes[currentPage]?.appState,
-              collaborators: scenes[currentPage]?.appState?.collaborators || [],
-            },
-            files: scenes[currentPage]?.files || {},
-          }}
-          style={{ width: "100%", height: "100%" }}
-        />
+       <excal />
       </div>
       <div className="flex justify-between items-center h-[7%] bg-[#FFFFFF] border-t border-gray-300 px-4">
         <div>
