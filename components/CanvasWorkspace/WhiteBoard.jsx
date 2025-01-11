@@ -265,7 +265,7 @@ export default function WhiteBoard({ id }) {
       <div className="w-screen h-screen overflow-hidden">
       {/* Excalidraw Canvas */}
       <div className="h-[93%] w-full">
-       <excal />
+       {excal}
       </div>
       <div className="flex justify-between items-center h-[7%] bg-[#FFFFFF] border-t border-gray-300 px-4">
         <div>
