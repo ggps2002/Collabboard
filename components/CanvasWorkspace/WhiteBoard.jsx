@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import DeleteIcon from '@mui/icons-material/Delete';
-import debounce from "lodash.debounce";
+import _ from 'lodash'; 
 import dynamic from "next/dynamic";
 import PeopleIcon from '@mui/icons-material/People';
 import {
@@ -249,10 +249,9 @@ export default function WhiteBoard({ id }) {
             !_.isEqual(currentScene.files, files)
           ) {
             updatedScenes[currentPage] = {
-              ...currentScene,
-              elements,
-              appState,
-              files,
+              elements: elements,
+              appState: appState,
+              files: files,
             };
             console.log("Scene Updated", elements, appState, files);
             return updatedScenes;
