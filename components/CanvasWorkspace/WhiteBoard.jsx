@@ -238,6 +238,11 @@ export default function WhiteBoard({ id }) {
       <Excalidraw
       key={currentPage}
       onChange={(elements, appState, files) => {
+        if (
+          !_.isEqual(scenes[currentPage].elements, elements) ||
+          !_.isEqual(scenes[currentPage].appState, appState) ||
+          !_.isEqual(scenes[currentPage].files, files)
+        )
         setScenes((prevScenes) => {
           const updatedScenes = [...prevScenes];
           const currentScene = updatedScenes[currentPage];
