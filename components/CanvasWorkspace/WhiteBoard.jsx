@@ -239,9 +239,6 @@ export default function WhiteBoard({ id }) {
       };
       return updatedScenes;
     });
-    setInterval(() => {
-      saveScene();
-    }, 20000);
   };
 
   return (
