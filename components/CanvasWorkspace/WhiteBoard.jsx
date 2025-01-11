@@ -230,25 +230,19 @@ export default function WhiteBoard({ id }) {
   //   scenesRef.current = scenes; // Keep the ref updated with the latest state
   // }, [scenes]);
 
-  // useEffect(() => {
-  //   if (excalidrawAPIs[currentPage]) {
-  //     let once = false;
-  //     const handleChange = debounce(() => {
-  //       if (!once && scenesRef.current[currentPage].elements.length > 0 || scenesRef.current[currentPage].files.length > 0) {
-  //         updateScene();
-  //         console.log("Scenes (ref):", scenesRef.current);
-  //         excalidrawAPIs[currentPage].updateScene(scenesRef.current[currentPage]);
-  //         once = true;
-  //       }
-  //     }, 100);
+  useEffect(() => {
+    if (excalidrawAPIs[currentPage]) {
+      const handleChange = debounce(() => {
+          updateScene();
+      }, 100);
 
-  //     excalidrawAPIs[currentPage].onChange(handleChange);
+      excalidrawAPIs[currentPage].onChange(handleChange);
 
-  //     return () => {
-  //       handleChange.cancel(); // Cleanup debounce on unmount
-  //     };
-  //   }
-  // }, [excalidrawAPIs, currentPage]);
+      return () => {
+        handleChange.cancel(); // Cleanup debounce on unmount
+      };
+    }
+  }, [excalidrawAPIs, currentPage]);
 
 
   return (
@@ -259,7 +253,6 @@ export default function WhiteBoard({ id }) {
         <Excalidraw
           key={currentPage}
           excalidrawAPI={(api) => handleAPI(api, currentPage)}
-          onChange={updateScene}
           initialData={{
             elements: scenes[currentPage]?.elements || [],
             appState: {
