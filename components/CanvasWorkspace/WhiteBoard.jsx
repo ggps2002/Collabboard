@@ -207,6 +207,10 @@ export default function WhiteBoard({ id }) {
     });
   }, []);
 
+  useEffect(() => {
+    saveScene();
+  }, [scenes]);
+
 
 
   // useEffect(() => {
@@ -242,9 +246,6 @@ export default function WhiteBoard({ id }) {
           return updatedScenes;
         })
         console.log("Scene Updated",elements, appState, files);
-        debounce(() => {
-          saveScene();
-        }, 20000);
       }}
       excalidrawAPI={(api) => handleAPI(api, currentPage)}
       initialData={{
