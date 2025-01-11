@@ -230,15 +230,6 @@ export default function WhiteBoard({ id }) {
 
   const handleChange = (elements, appState, files) => {
     console.log("Scene Updated",elements, appState, files);
-    setScenes((prevScenes) => {
-      const updatedScenes = [...prevScenes];
-      updatedScenes[currentPage] = {
-        elements: JSON.parse(JSON.stringify(elements)), // Deep copy elements
-        appState: JSON.parse(JSON.stringify(appState)), // Deep copy appState
-        files: files, // Save image files separately
-      };
-      return updatedScenes;
-    });
   };
 
   return (
