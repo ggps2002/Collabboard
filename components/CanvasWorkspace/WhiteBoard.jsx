@@ -35,6 +35,7 @@ const exportToCanvas = dynamic(
 
 export default function WhiteBoard({ id }) {
   const [scenes, setScenes] = useState([{}]); // Initialize with one empty scene
+  const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [excalidrawAPIs, setExcalidrawAPIs] = useState([]); // Store API instances for each page
   const scenesRef = useRef(scenes); // Ref to track the latest scenes
@@ -68,6 +69,7 @@ export default function WhiteBoard({ id }) {
             setScenes([]); // Default to an empty array if parsing fails
           }
         }
+        setIsLoading = false;
       } catch (error) {
         console.error(error);
       }
@@ -250,7 +252,8 @@ export default function WhiteBoard({ id }) {
 
 
   return (
-    <div className="w-screen h-screen overflow-hidden">
+    !isLoading && (
+      <div className="w-screen h-screen overflow-hidden">
       {/* Excalidraw Canvas */}
       <div className="h-[93%] w-full">
         <Excalidraw
@@ -386,6 +389,8 @@ export default function WhiteBoard({ id }) {
         </div>
       </div>
     </div>
-  )
+    )
+    
+)
 
 }
