@@ -81,7 +81,6 @@ export default function WhiteBoard({ id }) {
   }, [id])
 
   // Save the current page's scene data
-  useEffect(() => {
     const saveScene = async () => {
       try {
         console.log(id);
@@ -112,14 +111,6 @@ export default function WhiteBoard({ id }) {
       }
     };
 
-    // Call saveScene every 30 seconds
-    const intervalId = setInterval(() => {
-      saveScene();
-    }, 10000); // 30000 milliseconds = 30 seconds
-
-    // Cleanup the interval when the component is unmounted
-    return () => clearInterval(intervalId);
-  }, [ scenes ]); // Adding dependencies so it runs whenever `id` or `scenes` change
   // Add a new page
   const handleAddPage = () => {
     setScenes((prevScenes) => {
@@ -234,6 +225,7 @@ export default function WhiteBoard({ id }) {
     if (excalidrawAPIs[currentPage]) {
       const handleChange = debounce(() => {
           updateScene();
+          saveScene();
       }, 100);
 
       excalidrawAPIs[currentPage].onChange(handleChange);
