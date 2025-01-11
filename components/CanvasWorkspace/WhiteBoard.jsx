@@ -240,12 +240,26 @@ export default function WhiteBoard({ id }) {
       onChange={(elements, appState, files) => {
         setScenes((prevScenes) => {
           const updatedScenes = [...prevScenes];
-          updatedScenes[currentPage].elements = elements;
-          updatedScenes[currentPage].appState = appState;
-          updatedScenes[currentPage].files = files;
-          return updatedScenes;
-        })
-        console.log("Scene Updated",elements, appState, files);
+          const currentScene = updatedScenes[currentPage];
+      
+          // Only update if something actually changed
+          if (
+            !_.isEqual(currentScene.elements, elements) ||
+            !_.isEqual(currentScene.appState, appState) ||
+            !_.isEqual(currentScene.files, files)
+          ) {
+            updatedScenes[currentPage] = {
+              ...currentScene,
+              elements,
+              appState,
+              files,
+            };
+            console.log("Scene Updated", elements, appState, files);
+            return updatedScenes;
+          }
+      
+          return prevScenes; // No change, return the previous state
+        });
       }}
       excalidrawAPI={(api) => handleAPI(api, currentPage)}
       initialData={{
