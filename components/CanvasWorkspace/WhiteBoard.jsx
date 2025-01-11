@@ -228,9 +228,6 @@ export default function WhiteBoard({ id }) {
   //   }
   // }, [excalidrawAPIs, currentPage]);
 
-  const handleChange = (elements, appState, files) => {
-    console.log("Scene Updated",elements, appState, files);
-  };
 
   const excal = useMemo(() => {
     return (
@@ -245,6 +242,9 @@ export default function WhiteBoard({ id }) {
           return updatedScenes;
         })
         console.log("Scene Updated",elements, appState, files);
+        setInterval(() => {
+          saveScene();
+        }, 20000);
       }}
       excalidrawAPI={(api) => handleAPI(api, currentPage)}
       initialData={{
