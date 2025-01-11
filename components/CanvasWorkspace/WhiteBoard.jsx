@@ -242,7 +242,7 @@ export default function WhiteBoard({ id }) {
           return updatedScenes;
         })
         console.log("Scene Updated",elements, appState, files);
-        setInterval(() => {
+        debounce(() => {
           saveScene();
         }, 20000);
       }}
