@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import DeleteIcon from '@mui/icons-material/Delete';
-import _ from 'lodash'; 
+import _ from 'lodash';
 import dynamic from "next/dynamic";
 import PeopleIcon from '@mui/icons-material/People';
 import {
@@ -39,13 +39,11 @@ export default function WhiteBoard({ id }) {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [excalidrawAPIs, setExcalidrawAPIs] = useState([]); // Store API instances for each page
-  const scenesRef = useRef(scenes); // Ref to track the latest scenes
 
   // set the scene from the data saved on appwrite projects database
   useEffect(() => {
     const mountScene = async () => {
       try {
-        console.log(id);
         const client = new Client();
         client
           .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
@@ -56,15 +54,10 @@ export default function WhiteBoard({ id }) {
           process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
           [Query.equal("$id", id)]
         );
-        console.log(project.documents[0]);
         if (project.documents[0] && project.documents[0].scene.length > 0) {
           try {
             const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
-            console.log(parsedScene);
             setScenes(parsedScene);
-            scenesRef.current = parsedScene;
-            console.log(scenes);
-            console.log("Scene loaded successfully!");
           } catch (error) {
             console.error("Failed to parse scene JSON:", error);
             setScenes([]); // Default to an empty array if parsing fails
@@ -81,35 +74,31 @@ export default function WhiteBoard({ id }) {
   }, [id])
 
   // Save the current page's scene data
-    const saveScene = async () => {
-      try {
-        console.log(id);
-        const client = new Client();
-        client
-          .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
-          .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
-        const database = new Databases(client);
-        const project = await database.listDocuments(
+  const saveScene = async () => {
+    try {
+      const client = new Client();
+      client
+        .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT)
+        .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT);
+      const database = new Databases(client);
+      const project = await database.listDocuments(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
+        process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
+        [Query.equal("$id", id)]
+      );
+      if (project.documents[0]) {
+        const updatedScene = scenes.map((scene) => JSON.stringify(scene));
+        await database.updateDocument(
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
           process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
-          [Query.equal("$id", id)]
+          project.documents[0].$id,
+          { scene: updatedScene }
         );
-        console.log(project.documents[0]);
-        if (project.documents[0]) {
-          const updatedScene = scenes.map((scene) => JSON.stringify(scene));
-          console.log(updatedScene);
-          await database.updateDocument(
-            process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-            process.env.NEXT_PUBLIC_APPWRITE_PROJECT_COLLECTION_ID,
-            project.documents[0].$id,
-            { scene: updatedScene }
-          );
-          console.log("Scene saved successfully!");
-        }
-      } catch (error) {
-        console.error(error);
       }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   // Add a new page
   const handleAddPage = () => {
@@ -186,18 +175,6 @@ export default function WhiteBoard({ id }) {
     pdf.save("whiteboard.pdf");
   };
 
-  // Update the current page's drawing data
-  const updateScene = useCallback(() => {
-    if (excalidrawAPIs[currentPage]) {
-      const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
-      const appState = excalidrawAPIs[currentPage].getAppState();
-      const files = excalidrawAPIs[currentPage].getFiles();
-
-      
-    }
-  }, [currentPage, excalidrawAPIs]);
-
-
   // Store Excalidraw API instances for each page
   const handleAPI = useCallback((api, pageIndex) => {
     setExcalidrawAPIs((prevAPIs) => {
@@ -211,201 +188,179 @@ export default function WhiteBoard({ id }) {
     saveScene();
   }, [scenes]);
 
-
-
-  // useEffect(() => {
-  //   scenesRef.current = scenes; // Keep the ref updated with the latest state
-  // }, [scenes]);
-
-  // useEffect(() => {
-  //   if (excalidrawAPIs[currentPage]) {
-  //     const handleChange = debounce(() => {
-  //         updateScene();
-  //         saveScene();
-  //     }, 100);
-
-  //     excalidrawAPIs[currentPage].onChange(handleChange);
-
-  //     return () => {
-  //       handleChange.cancel(); // Cleanup debounce on unmount
-  //     };
-  //   }
-  // }, [excalidrawAPIs, currentPage]);
-
-
   const excal = useMemo(() => {
     return (
       <Excalidraw
-      key={currentPage}
-      onChange={(elements, appState, files) => {
-        if (
-          !_.isEqual(scenes[currentPage].elements, elements) ||
-          !_.isEqual(scenes[currentPage].appState, appState) ||
-          !_.isEqual(scenes[currentPage].files, files)
-        )
-        setScenes((prevScenes) => {
-          const updatedScenes = [...prevScenes];
-          const currentScene = updatedScenes[currentPage];
-      
-          // Only update if something actually changed
+        key={currentPage}
+        onChange={(elements, appState, files) => {
           if (
-            !_.isEqual(currentScene.elements, elements) ||
-            !_.isEqual(currentScene.appState, appState) ||
-            !_.isEqual(currentScene.files, files)
+            !_.isEqual(scenes[currentPage].elements, elements) ||
+            !_.isEqual(scenes[currentPage].appState, appState) ||
+            !_.isEqual(scenes[currentPage].files, files)
           ) {
-            updatedScenes[currentPage] = {
-              elements: elements,
-              appState: appState,
-              files: files,
-            };
-            console.log("Scene Updated", elements, appState, files);
-            return updatedScenes;
+            setScenes((prevScenes) => {
+              const updatedScenes = [...prevScenes];
+              const currentScene = updatedScenes[currentPage];
+
+              // Only update if something actually changed
+              if (
+                !_.isEqual(currentScene.elements, elements) ||
+                !_.isEqual(currentScene.appState, appState) ||
+                !_.isEqual(currentScene.files, files)
+              ) {
+                updatedScenes[currentPage] = {
+                  elements: elements,
+                  appState: appState,
+                  files: files,
+                };
+                return updatedScenes;
+              }
+
+              return prevScenes; // No change, return the previous state
+            });
           }
-      
-          return prevScenes; // No change, return the previous state
-        });
-      }}
-      excalidrawAPI={(api) => handleAPI(api, currentPage)}
-      initialData={{
-        elements: scenes[currentPage]?.elements || [],
-        appState: {
-          ...scenes[currentPage]?.appState,
-          collaborators: scenes[currentPage]?.appState?.collaborators || [],
-        },
-        files: scenes[currentPage]?.files || {},
-      }}
-      style={{ width: "100%", height: "100%" }}
-    />
+        }}
+        excalidrawAPI={(api) => handleAPI(api, currentPage)}
+        initialData={{
+          elements: scenes[currentPage]?.elements || [],
+          appState: {
+            ...scenes[currentPage]?.appState,
+            collaborators: scenes[currentPage]?.appState?.collaborators || [],
+          },
+          files: scenes[currentPage]?.files || {},
+        }}
+        style={{ width: "100%", height: "100%" }}
+      />
     )
   }, [currentPage, excalidrawAPIs]);
 
   return (
-    isLoading? <Transition /> : (
+    isLoading ? <Transition /> : (
       <div className="w-screen h-screen overflow-hidden">
-      {/* Excalidraw Canvas */}
-      <div className="h-[93%] w-full">
-       {excal}
-      </div>
-      <div className="flex justify-between items-center h-[7%] bg-[#FFFFFF] border-t border-gray-300 px-4">
-        <div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div onClick={handleExportAsPDF} className="hover:bg-[#F1F0FF] bg-gray-200 text-black font-sans text-[12px] font-[400] p-2 rounded cursor-pointer transition ease-in-out duration-300">
-                  Export
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Export pages as pdf</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
+        {/* Excalidraw Canvas */}
+        <div className="h-[93%] w-full">
+          {excal}
         </div>
-        <div className="flex p-[4px] gap-[0.2rem] rounded-md border-2 shadow-lg border-gray-200">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div
-                  onClick={handleAddPage}
-                  className="bg-green-500 py-2 px-[0.7rem] rounded-lg cursor-pointer"
-                >
-                  <AddIcon fontSize="small" style={{ fontSize: "17px" }} />
-                </div>
-              </TooltipTrigger>
+        <div className="flex justify-between items-center h-[7%] bg-[#FFFFFF] border-t border-gray-300 px-4">
+          <div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div onClick={handleExportAsPDF} className="hover:bg-[#F1F0FF] bg-gray-200 text-black font-sans text-[12px] font-[400] p-2 rounded cursor-pointer transition ease-in-out duration-300">
+                    Export
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Export pages as pdf</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
 
-              <TooltipContent>
-                <p>Create new page</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div
-                  onClick={handlePreviousPage}
-                  className={`py-2 px-[0.7rem] rounded-lg ${currentPage <= 0 ? "cursor-not-allowed opacity-50" : "hover:bg-[#E0DFFF] cursor-pointer"
-                    }`}
-                >
-                  <ArrowBackIosNewIcon
-                    fontSize="small"
-                    style={{ color: currentPage <= 0 ? "gray" : "black", fontSize: "17px" }}
-                  />
-                </div>
-              </TooltipTrigger>
-
-              <TooltipContent>
-                <p>previous page</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          <div className="text-[#434349]  bg-white p-2 font-sans text-[12px] font-[400]">
-            Page {currentPage + 1} / {scenes.length}
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div
-                  onClick={handleNextPage}
-                  className={`py-2 px-[0.7rem] rounded-lg ${currentPage >= scenes.length - 1 ? "cursor-not-allowed opacity-50" : "hover:bg-[#E0DFFF] cursor-pointer"
-                    }`}
-                >
-                  <ArrowForwardIosIcon
-                    fontSize="small"
-                    style={{
-                      color: currentPage >= scenes.length - 1 ? "gray" : "black",
-                      fontSize: "17px",
-                    }}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Next page</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex p-[4px] gap-[0.2rem] rounded-md border-2 shadow-lg border-gray-200">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    onClick={handleAddPage}
+                    className="bg-green-500 py-2 px-[0.7rem] rounded-lg cursor-pointer"
+                  >
+                    <AddIcon fontSize="small" style={{ fontSize: "17px" }} />
+                  </div>
+                </TooltipTrigger>
 
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div
-                  onClick={handleDeletePage}
-                  className={`bg-red-500 py-2 px-[0.7rem] rounded-lg ${scenes.length <= 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-                    }`}
-                >
-                  <DeleteIcon
-                    fontSize="small"
-                    style={{
-                      color: scenes.length <= 1 ? "gray" : "white",
-                      fontSize: "17px",
-                    }}
-                  />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete this page</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
-        <div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <div className="hover:bg-[#F1F0FF] bg-gray-200 text-black font-sans text-[12px] font-[400] p-2 rounded cursor-pointer transition ease-in-out duration-300">
-                  <PeopleIcon style={{ fontSize: "17px" }} /> Participants
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>See the participants</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+                <TooltipContent>
+                  <p>Create new page</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    onClick={handlePreviousPage}
+                    className={`py-2 px-[0.7rem] rounded-lg ${currentPage <= 0 ? "cursor-not-allowed opacity-50" : "hover:bg-[#E0DFFF] cursor-pointer"
+                      }`}
+                  >
+                    <ArrowBackIosNewIcon
+                      fontSize="small"
+                      style={{ color: currentPage <= 0 ? "gray" : "black", fontSize: "17px" }}
+                    />
+                  </div>
+                </TooltipTrigger>
+
+                <TooltipContent>
+                  <p>previous page</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <div className="text-[#434349]  bg-white p-2 font-sans text-[12px] font-[400]">
+              Page {currentPage + 1} / {scenes.length}
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    onClick={handleNextPage}
+                    className={`py-2 px-[0.7rem] rounded-lg ${currentPage >= scenes.length - 1 ? "cursor-not-allowed opacity-50" : "hover:bg-[#E0DFFF] cursor-pointer"
+                      }`}
+                  >
+                    <ArrowForwardIosIcon
+                      fontSize="small"
+                      style={{
+                        color: currentPage >= scenes.length - 1 ? "gray" : "black",
+                        fontSize: "17px",
+                      }}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Next page</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div
+                    onClick={handleDeletePage}
+                    className={`bg-red-500 py-2 px-[0.7rem] rounded-lg ${scenes.length <= 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+                      }`}
+                  >
+                    <DeleteIcon
+                      fontSize="small"
+                      style={{
+                        color: scenes.length <= 1 ? "gray" : "white",
+                        fontSize: "17px",
+                      }}
+                    />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Delete this page</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="hover:bg-[#F1F0FF] bg-gray-200 text-black font-sans text-[12px] font-[400] p-2 rounded cursor-pointer transition ease-in-out duration-300">
+                    <PeopleIcon style={{ fontSize: "17px" }} /> Participants
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>See the participants</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </div>
-    </div>
     )
-    
-)
+
+  )
 
 }
