@@ -16,6 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import jsPDF from "jspdf";
+import Transition from "../Transition";
 
 const Excalidraw = dynamic(
   async () => (
@@ -69,7 +70,7 @@ export default function WhiteBoard({ id }) {
             setScenes([]); // Default to an empty array if parsing fails
           }
         }
-        setIsLoading = false;
+        setIsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -252,7 +253,7 @@ export default function WhiteBoard({ id }) {
 
 
   return (
-    !isLoading && (
+    isLoading? <Transition /> : (
       <div className="w-screen h-screen overflow-hidden">
       {/* Excalidraw Canvas */}
       <div className="h-[93%] w-full">
