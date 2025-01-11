@@ -221,24 +221,24 @@ export default function WhiteBoard({ id }) {
   //   scenesRef.current = scenes; // Keep the ref updated with the latest state
   // }, [scenes]);
 
-  useEffect(() => {
-    if (excalidrawAPIs[currentPage]) {
-      const handleChange = debounce(() => {
-          updateScene();
-          saveScene();
-      }, 100);
+  // useEffect(() => {
+  //   if (excalidrawAPIs[currentPage]) {
+  //     const handleChange = debounce(() => {
+  //         updateScene();
+  //         saveScene();
+  //     }, 100);
 
-      excalidrawAPIs[currentPage].onChange(handleChange);
+  //     excalidrawAPIs[currentPage].onChange(handleChange);
 
-      return () => {
-        handleChange.cancel(); // Cleanup debounce on unmount
-      };
-    }
-  }, [excalidrawAPIs, currentPage]);
+  //     return () => {
+  //       handleChange.cancel(); // Cleanup debounce on unmount
+  //     };
+  //   }
+  // }, [excalidrawAPIs, currentPage]);
 
   const handleChange = useMemo((elements, appState, files) => {
     console.log("Scene Updated",elements, appState, files);
-  }, [excalidrawAPIs[currentPage], currentPage]);
+  }, []);
 
   return (
     isLoading? <Transition /> : (
