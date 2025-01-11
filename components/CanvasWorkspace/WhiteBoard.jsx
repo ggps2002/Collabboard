@@ -39,7 +39,7 @@ export default function WhiteBoard({ id }) {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [excalidrawAPIs, setExcalidrawAPIs] = useState([]); // Store API instances for each page
-  const saveSceneTimeout = useRef(null); // Ref to track the latest scenes
+  const scenesRef = useRef(scenes); // Ref to track the latest scenes
 
   // set the scene from the data saved on appwrite projects database
   useEffect(() => {
@@ -62,6 +62,7 @@ export default function WhiteBoard({ id }) {
             const parsedScene = project.documents[0].scene.map((scene) => JSON.parse(scene));
             console.log(parsedScene);
             setScenes(parsedScene);
+            scenesRef.current = parsedScene;
             console.log(scenes);
             console.log("Scene loaded successfully!");
           } catch (error) {
@@ -186,15 +187,15 @@ export default function WhiteBoard({ id }) {
   };
 
   // Update the current page's drawing data
-  // const updateScene = useCallback(() => {
-  //   if (excalidrawAPIs[currentPage]) {
-  //     const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
-  //     const appState = excalidrawAPIs[currentPage].getAppState();
-  //     const files = excalidrawAPIs[currentPage].getFiles();
+  const updateScene = useCallback(() => {
+    if (excalidrawAPIs[currentPage]) {
+      const sceneElements = excalidrawAPIs[currentPage].getSceneElements();
+      const appState = excalidrawAPIs[currentPage].getAppState();
+      const files = excalidrawAPIs[currentPage].getFiles();
 
       
-  //   }
-  // }, [currentPage, excalidrawAPIs]);
+    }
+  }, [currentPage, excalidrawAPIs]);
 
 
   // Store Excalidraw API instances for each page
@@ -241,11 +242,7 @@ export default function WhiteBoard({ id }) {
           return updatedScenes;
         })
         console.log("Scene Updated",elements, appState, files);
-        if (saveSceneTimeout.current) {
-          clearTimeout(saveSceneTimeout.current);
-        }
-      
-        saveSceneTimeout.current = setTimeout(() => {
+        setTimeout(() => {
           saveScene();
         }, 20000);
       }}
