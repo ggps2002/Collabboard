@@ -238,7 +238,7 @@ export default function WhiteBoard({ id }) {
 
   const handleChange = useMemo((elements, appState, files) => {
     console.log("Scene Updated",elements, appState, files);
-  })
+  }, [excalidrawAPIs[currentPage], currentPage]);
 
   return (
     isLoading? <Transition /> : (
