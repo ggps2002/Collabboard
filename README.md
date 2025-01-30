@@ -1,4 +1,4 @@
-# An Notebook type application
+# A Notebook type application
 
 This application lets users to create there unique notebooks with excalidraw drawing board wih multipage features. Best for drawing out case
 studies and low level sysem design for software ideas.
