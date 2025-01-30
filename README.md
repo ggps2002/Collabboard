@@ -1,7 +1,7 @@
-# A Notebook type application
+# A Notebook Type Application
 
-This application lets users to create there unique notebooks with excalidraw drawing board with multipage features. Best for drawing out case
-studies and low level system design for software ideas. The real-time collaboration and user invite features are yet to build.
+This application let users to create unique multpage notebooks with excalidraw drawing board. Best for drawing out case
+studies and low level system design for software ideas and keeping thoughts organised. The real-time collaboration and user invite features are yet to build.
 
 ### ✨ Key Features
 - Multipage Notebook Feature
@@ -11,12 +11,16 @@ studies and low level system design for software ideas. The real-time collaborat
 - Dark and Light Version
 and Much More ...
 
-### 🔨 Tech used
+### 🔨 Tech Used
 - NextJs with Typescript for both ssr and csr
 - TailwindCSS and Shadcn for Styling and UI
 - Appwrtie client sdk for backend, authentication and database
 - ExcalidrawAPI for excalidraw drawing board interface
 - Docker to containerize the application to help deployment
+
+### 📝 Future Updates
+- Real-time collaborations between users
+- User invites for joining a notebook 
 
 
 ### 💜 Support
