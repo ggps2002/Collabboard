@@ -1,7 +1,7 @@
 # A Notebook type application
 
-This application lets users to create there unique notebooks with excalidraw drawing board wih multipage features. Best for drawing out case
-studies and low level sysem design for software ideas.
+This application lets users to create there unique notebooks with excalidraw drawing board with multipage features. Best for drawing out case
+studies and low level system design for software ideas. The real-time collaboration and user invite features are yet to build.
 
 ### ✨ Key Features
 - Multipage Notebook Feature
